@@ -57,5 +57,5 @@ jobs:
         with:
           app-name: 'equinox'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_D65541453E614EEBA7024721AA097E84 }}
+          publish-profile: ${{ secrets.AZURE_CREDENTIALS }}
           package: .
