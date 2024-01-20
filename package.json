@@ -1,15 +1,18 @@
 {
-  "name": "Back-end",
+  "name": "back-end",
   "version": "1.0.0",
   "description": "Backend code base for Equinox fault detection mobile application",
   "main": "src/server.ts",
-  "repository": "git@github.com:Equinox-SDGP/Back-end.git",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Equinox-SDGP/Back-end.git"
+  },
   "author": "nimeshaperi <112054998+nimeshaperi@users.noreply.github.com>",
   "license": "MIT",
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/index.js",
-    "dev": "ts-node-dev src/server.ts"
+    "dev": "ts-node-dev src/index.ts"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
@@ -24,5 +27,9 @@
     "mongodb": "^6.3.0",
     "mongoose": "^8.0.4",
     "nodemon": "^3.0.2"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/Equinox-SDGP/Back-end/issues"
+  },
+  "homepage": "https://github.com/Equinox-SDGP/Back-end#readme"
 }
