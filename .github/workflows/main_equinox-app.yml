@@ -11,6 +11,9 @@ on:
 
 jobs:
   build:
+    env:
+      PORT: 3000
+      MONGO_URI: ${{ secrets.MONGO_URI }}
     runs-on: ubuntu-latest
 
     steps:
