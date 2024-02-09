@@ -23,6 +23,11 @@ app.use(body_parser_1.default.urlencoded({ extended: false }));
 app.use(body_parser_1.default.json());
 // Setup the routes
 app.use("/user", userRouter);
+// Route checking if the server is working
+app.get("/user/working", (req, res) => {
+    res.send("User route working");
+    console.log("User route working");
+});
 app.get("/", (req, res) => {
     res.send("Hello World!");
     console.log("Route working");

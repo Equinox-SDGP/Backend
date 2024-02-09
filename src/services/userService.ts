@@ -1,3 +1,4 @@
+import Logger from "js-logger";
 import { IUser } from "../database/models/userModel";
 import * as User from "../database/user";
 
@@ -15,6 +16,7 @@ export const createUser = async (userData: IUser) => {
         userData["_id"] = new mongoose.Types.ObjectId();
         
         User.createUser(userData);
+        resolve(userData);
       }
     });
   });

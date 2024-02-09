@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import * as userService from "../services/userService";
+import User from "../database/models/userModel";
 
 /** Add the user to the database after validation
  *
@@ -7,7 +8,11 @@ import * as userService from "../services/userService";
  * @param res
  * @param next
  */
-export const createUser = async (req: Request, res: Response, next: NextFunction) => {
+export const createUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const userData = req.body;
   // try {
   //   await validate(userData);
@@ -15,6 +20,12 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
   //   const e = new Error("Invalid email or password!");
   //   return next(e);
   // }
+
+  const existsUser = await User.findOne({email: userData.email}).exec();
+  if (existsUser) {
+    const e = new Error("User already exists!");
+    return next(e);
+  }
 
   try {
     const user = await userService.createUser(userData);
@@ -32,27 +43,30 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
   }
 };
 
-export const verifyUser = async (req: Request, res: Response, next: NextFunction) => {
+export const verifyUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const userData = req.body;
   console.log(userData);
 };
 
-export const getUser = async (req: Request, res: Response, next: NextFunction) => {
+export const getUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const userId = req.params.id;
   console.log(userId);
-  
-  try {
-    const user = await userService.getUser(userId);
-    if (user) {
-      res.status(200).json({
-        user,
-      });
-    } else {
-      const e = new Error("User not found!");
-      return next(e);
-    }
-  } catch (error) {
-    const e = new Error("Error fetching user!");
+
+  const user = await userService.getUser(userId);
+  if (user) {
+    res.status(200).json({
+      user: user,
+    });
+  } else {
+    const e = new Error("User not found!");
     return next(e);
   }
-}
+};

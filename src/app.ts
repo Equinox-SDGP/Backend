@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
+import Logger from "js-logger";
 
 // Load environment variables
 require("dotenv").config();
@@ -10,11 +11,17 @@ const app = express();
 
 // Define a port
 const port = process.env.PORT || 3000;
+Logger.useDefaults();
 
 // Connecting to the database
-mongoose.connect(process.env.MONGO_URI || "").catch((err) => {
-  console.log(err);
-});
+mongoose
+  .connect(process.env.MONGO_URI || "")
+  .catch((err) => {
+    console.log(err);
+  })
+  .then(() => {
+    console.log("Connected to the database");
+  });
 
 // Importing routes modules
 const userRouter = require("./routes/userRoutes");
@@ -27,13 +34,9 @@ app.use(bodyParser.json());
 app.use("/user", userRouter);
 
 // Route checking if the server is working
-app.get("/user/working",(req,res)=>{
-  res.send("User route working");
-  console.log("User route working");
-})
 app.get("/", (req, res) => {
   res.send("Hello World!");
-  console.log("Route working");
+  Logger.info("[app] Home route working");
 });
 
 app.listen(port, () => {
