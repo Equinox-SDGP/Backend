@@ -36,3 +36,23 @@ export const verifyUser = async (req: Request, res: Response, next: NextFunction
   const userData = req.body;
   console.log(userData);
 };
+
+export const getUser = async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.params.id;
+  console.log(userId);
+  
+  try {
+    const user = await userService.getUser(userId);
+    if (user) {
+      res.status(200).json({
+        user,
+      });
+    } else {
+      const e = new Error("User not found!");
+      return next(e);
+    }
+  } catch (error) {
+    const e = new Error("Error fetching user!");
+    return next(e);
+  }
+}

@@ -16,3 +16,8 @@ export const verifyUser = async (userData: IUser) => {
   const user = await User.findOne({ email: userData.email }).exec();
   return user;
 };
+
+export const getUser = async(userId: string) => {
+  const user = await User.findOne({ _id: userId }).exec();
+  return user;
+}

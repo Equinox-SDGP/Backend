@@ -27,3 +27,7 @@ export const verifyUser = async (userData: IUser) => {
   }
   return Promise.resolve(null);
 };
+
+export const getUser = async(userId: string) => {
+  return User.getUser(userId);
+}
