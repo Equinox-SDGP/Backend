@@ -49,7 +49,15 @@ export const verifyUser = async (
   next: NextFunction
 ) => {
   const userData = req.body;
-  console.log(userData);
+  const user = await userService.verifyUser(userData);
+  if (user) {
+    res.status(200).json({
+      message: "User verified successfully",
+    });
+  } else {
+    const e = new Error("User not found!");
+    return next(e);
+  }
 };
 
 export const getUser = async (

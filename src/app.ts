@@ -22,6 +22,7 @@ mongoose
   .then(() => {
     console.log("Connected to the database");
   });
+  console.log(process.env.MONGO_URI);
 
 // Importing routes modules
 const userRouter = require("./routes/userRoutes");
