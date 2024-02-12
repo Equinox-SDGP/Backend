@@ -15,13 +15,16 @@ Logger.useDefaults();
 
 // Connecting to the database
 mongoose
-  .connect(process.env.MONGO_URI || "")
+  .connect("mongodb+srv://nimesh20221000:zQiXKdX7MBtXJqSA@equinoxdb.ivinrwy.mongodb.net/?retryWrites=true&w=majority" || "")
   .catch((err) => {
     console.log(err);
   })
   .then(() => {
     console.log("Connected to the database");
   });
+
+  console.log(process.env.MONGO_URI);
+
 
 // Importing routes modules
 const userRouter = require("./routes/userRoutes");

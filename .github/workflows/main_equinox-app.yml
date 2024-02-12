@@ -47,6 +47,9 @@ jobs:
           name: node-app
 
       - name: Deploy to Azure Web App
+        env:
+          PORT: 3000
+          MONGO_URI: ${{ secrets.MONGO_URI }}
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'Equinox-app'
