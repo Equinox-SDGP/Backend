@@ -15,7 +15,7 @@ Logger.useDefaults();
 
 // Connecting to the database
 mongoose
-  .connect(process.env.MONGO_URI || "")
+  .connect("mongodb+srv://nimesh20221000:zQiXKdX7MBtXJqSA@equinoxdb.ivinrwy.mongodb.net/?retryWrites=true&w=majority" || "")
   .catch((err) => {
     console.log(err);
   })
