@@ -28,6 +28,8 @@ mongoose
 
 // Importing routes modules
 const userRouter = require("./routes/userRoutes");
+const deviceRouter = require("./routes/deviceRoutes");
+
 
 // Set up body-parser
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -35,6 +37,7 @@ app.use(bodyParser.json());
 
 // Setup the routes
 app.use("/user", userRouter);
+app.use("/device", deviceRouter);
 
 // Route checking if the server is working
 app.get("/", (req, res) => {
