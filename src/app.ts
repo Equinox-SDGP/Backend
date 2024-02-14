@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
+import Logger from "js-logger";
 
 // Load environment variables
 require("dotenv").config();
@@ -10,11 +11,20 @@ const app = express();
 
 // Define a port
 const port = process.env.PORT || 3000;
+Logger.useDefaults();
 
 // Connecting to the database
-mongoose.connect(process.env.MONGO_URI || "").catch((err) => {
-  console.log(err);
-});
+mongoose
+  .connect("mongodb+srv://nimesh20221000:zQiXKdX7MBtXJqSA@equinoxdb.ivinrwy.mongodb.net/?retryWrites=true&w=majority" || "")
+  .catch((err) => {
+    console.log(err);
+  })
+  .then(() => {
+    console.log("Connected to the database");
+  });
+
+  console.log(process.env.MONGO_URI);
+
 
 // Importing routes modules
 const userRouter = require("./routes/userRoutes");
@@ -25,9 +35,11 @@ app.use(bodyParser.json());
 
 // Setup the routes
 app.use("/user", userRouter);
+
+// Route checking if the server is working
 app.get("/", (req, res) => {
   res.send("Hello World!");
-  console.log("Route working");
+  Logger.info("[app] Home route working");
 });
 
 app.listen(port, () => {
