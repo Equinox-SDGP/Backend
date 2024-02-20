@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import * as userService from "../services/userService";
-import User from "../database/models/userModel";
+import User from "../repository/models/userModel";
 
 /** Add the user to the database after validation
  *
