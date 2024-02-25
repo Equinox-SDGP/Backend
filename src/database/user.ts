@@ -16,7 +16,19 @@ export const verifyUser = async (userData: IUser) => {
   return user;
 };
 
-export const getUser = async(userId: string) => {
+export const getUser = async (userId: string) => {
   const user = await User.findOne({ _id: userId }).exec();
   return user;
-}
+};
+
+export const updateUser = async (userId: string, userData: IUser) => {
+  const user = await User.findOneAndUpdate({ _id: userId }, userData, {
+    new: true,
+  }).exec();
+  return user;
+};
+
+export const deleteUser = async (userId: string) => {
+  const user = await User.findOneAndDelete({ _id: userId }).exec();
+  return user;
+};

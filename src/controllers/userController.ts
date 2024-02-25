@@ -78,3 +78,38 @@ export const getUser = async (
     return next(e);
   }
 };
+
+export const updateUser = async(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = req.params.id;
+  const userData = req.body;
+  const user = await userService.updateUser(userId, userData);
+  if (user) {
+    res.status(200).json({
+      message: "User updated successfully",
+    });
+  } else {
+    const e = new Error("User not found!");
+    return next(e);
+  }
+};
+
+export const deleteUser = async(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = req.params.id;
+  const user = await userService.deleteUser(userId);
+  if (user) {
+    res.status(200).json({
+      message: "User deleted successfully",
+    });
+  } else {
+    const e = new Error("User not found!");
+    return next(e);
+  }
+};

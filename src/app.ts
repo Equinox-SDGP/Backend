@@ -3,6 +3,9 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import Logger from "js-logger";
 
+const swaggerUI = require("swagger-ui-express");
+const swaggerSpec = require("./swagger");
+
 // Load environment variables
 require("dotenv").config();
 
@@ -30,6 +33,8 @@ mongoose
 const userRouter = require("./routes/userRoutes");
 const deviceRouter = require("./routes/deviceRoutes");
 
+// Set up swagger
+app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 // Set up body-parser
 app.use(bodyParser.urlencoded({ extended: false }));
