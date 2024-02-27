@@ -1,6 +1,6 @@
 import Logger from "js-logger";
-import { IDevice } from "../database/models/deviceModel";
-import * as Device from "../database/device"; // Make sure to adjust the import path based on your project structure
+import { IDevice } from "../repository/models/deviceModel";
+import * as Device from "../repository/device"; // Make sure to adjust the import path based on your project structure
 
 const mongoose = require("mongoose");
 
@@ -13,11 +13,9 @@ export const addDevice = async (deviceData: IDevice) => {
       .then((device) => {
         resolve(device);
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         Logger.error("Error adding device:", error);
         reject(new Error("Error adding device to the database"));
       });
   });
 };
-
-
