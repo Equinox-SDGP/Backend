@@ -30,7 +30,9 @@
     "express": "^4.18.2",
     "js-logger": "^1.6.1",
     "mongodb": "^6.3.0",
-    "mongoose": "^8.1.1"
+    "mongoose": "^8.1.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
   },
   "bugs": {
     "url": "https://github.com/Equinox-SDGP/Back-end/issues"

@@ -33,3 +33,13 @@ export const verifyUser = async (userData: IUser) => {
 export const getUser = async(userId: string) => {
   return User.getUser(userId);
 }
+
+export const updateUser = async(userId: string, userData: IUser) => {
+  return User.updateUser(userId, userData);
+}
+
+export const deleteUser = async(userId: string) => {
+  return User.deleteUser(userId);
+}
+
+
