@@ -172,4 +172,9 @@ router.put("/:id", userController.updateUser);
  */
 router.delete("/:id", userController.deleteUser);
 
+<<<<<<< HEAD
 module.exports = router;
+=======
+module.exports = router;
+ 
+>>>>>>> 85b67c5 (Added Swagger UI documentation)
