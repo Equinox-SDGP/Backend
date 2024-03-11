@@ -6,4 +6,11 @@ export const addDevice = async (deviceData: IDevice) => {
   return newDevice.save();
 };
 
+export const getDevices = async () => {
+  return Device.find().exec();
+};
+
+export const getDeviceById = async (deviceId: number) => {
+  return Device.findById(deviceId).exec();
+};
 

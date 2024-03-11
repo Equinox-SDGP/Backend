@@ -17,9 +17,11 @@ export const addDevice = async (
   next: NextFunction
 ) => {
   const deviceData = req.body;
+  deviceData._id = deviceData.deviceId;
+  delete deviceData["deviceId"];
 
   const existsDevice = await Device.findOne({
-    deviceId: deviceData.deviceId,
+    _id: deviceData._id,
   }).exec();
   if (existsDevice) {
     const e = new Error("Device already exists!");
@@ -41,3 +43,43 @@ export const addDevice = async (
     return next(e);
   }
 };
+
+export const getDevices = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const devices = await deviceService.getDevices();
+    if (devices) {
+      res.status(200).json(devices);
+    } else {
+      const e = new Error("Error fetching devices!");
+      return next(e);
+    }
+  } catch (error) {
+    const e = new Error("Error fetching devices!");
+    return next(e);
+  }
+};
+
+
+export const getDeviceById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const deviceId = parseInt(req.params.id);
+  try {
+    const device = await deviceService.getDeviceById(deviceId);
+    if (device) {
+      res.status(200).json(device);
+    } else {
+      const e = new Error("Error fetching device!");
+      return next(e);
+    }
+  } catch (error) {
+    const e = new Error("Error fetching device!");
+    return next(e);
+  }
+}

@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import Logger from "js-logger";
+import 'module-alias/register';
 
 const swaggerUI = require("swagger-ui-express");
 const swaggerSpec = require("./swagger");
@@ -18,7 +19,10 @@ Logger.useDefaults();
 
 // Connecting to the database
 mongoose
-  .connect("mongodb+srv://nimesh20221000:zQiXKdX7MBtXJqSA@equinoxdb.ivinrwy.mongodb.net/?retryWrites=true&w=majority" || "")
+  .connect(
+    "mongodb+srv://nimesh20221000:zQiXKdX7MBtXJqSA@equinoxdb.ivinrwy.mongodb.net/?retryWrites=true&w=majority" ||
+      ""
+  )
   .catch((err) => {
     console.log(err);
   })
@@ -26,12 +30,12 @@ mongoose
     console.log("Connected to the database");
   });
 
-  console.log(process.env.MONGO_URI);
-
+console.log(process.env.MONGO_URI);
 
 // Importing routes modules
 const userRouter = require("./routes/userRoutes");
 const deviceRouter = require("./routes/deviceRoutes");
+const deviceUpdatesRouter = require("./routes/deviceUpdatesRoutes");
 
 // Set up swagger
 app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
@@ -43,6 +47,7 @@ app.use(bodyParser.json());
 // Setup the routes
 app.use("/user", userRouter);
 app.use("/device", deviceRouter);
+app.use("/deviceUpdates", deviceUpdatesRouter);
 
 // Route checking if the server is working
 app.get("/", (req, res) => {
