@@ -1,4 +1,4 @@
-import swaggerJSDoc from "swagger-jsdoc";
+const swaggerJSDoc = require("swagger-jsdoc");
 
 const swaggerDefinition = {
   openapi: "3.0.0",
@@ -15,4 +15,4 @@ const options = {
 };
 
 const swaggerSpec = swaggerJSDoc(options);
-export default swaggerSpec;
+module.exports = swaggerSpec;

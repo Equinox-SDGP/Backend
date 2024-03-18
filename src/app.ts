@@ -1,8 +1,13 @@
 import express from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
+const cron = require("node-cron");
+
+import * as fusionSessionController from "./controllers/fusionSessionController";
+import * as spaceDataController from "./controllers/spaceDataController";
+
 import Logger from "js-logger";
-import 'module-alias/register';
+import "module-alias/register";
 
 const swaggerUI = require("swagger-ui-express");
 const swaggerSpec = require("./swagger");
@@ -36,6 +41,7 @@ console.log(process.env.MONGO_URI);
 const userRouter = require("./routes/userRoutes");
 const deviceRouter = require("./routes/deviceRoutes");
 const deviceUpdatesRouter = require("./routes/deviceUpdatesRoutes");
+const spaceRouter = require("./routes/spaceRoutes");
 
 // Set up swagger
 app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
@@ -46,8 +52,28 @@ app.use(bodyParser.json());
 
 // Setup the routes
 app.use("/user", userRouter);
+app.use("/space", spaceRouter);
 app.use("/device", deviceRouter);
 app.use("/deviceUpdates", deviceUpdatesRouter);
+
+// Schedule the cron jobs
+cron.schedule(
+  "*/30 * * * *",
+  fusionSessionController.setPeriodicFusionSession,
+  {
+    scheduled: true,
+    timezone: "Asia/Colombo",
+  }
+);
+
+cron.schedule(
+  "0 * * * *",
+  spaceDataController.getHourlySpaceData,
+  {
+    scheduled: true,
+    timezone: "Asia/Colombo",
+  }
+);
 
 // Route checking if the server is working
 app.get("/", (req, res) => {

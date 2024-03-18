@@ -21,4 +21,3 @@ export const getUpdates = async (
 
   return updates;
 };
-// 15-05-2020 00:15

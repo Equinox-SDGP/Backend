@@ -1,6 +1,6 @@
 import Logger from "js-logger";
 import { IDevice } from "../repository/models/deviceModel";
-import * as Device from "../repository/device"; // Make sure to adjust the import path based on your project structure
+import * as Device from "../repository/deviceRepository"; // Make sure to adjust the import path based on your project structure
 
 const mongoose = require("mongoose");
 

@@ -1,5 +1,5 @@
 import { Stack } from "data-structure-typed";
-import * as deviceUpdatesRepository from "../repository/deviceUpdate";
+import * as deviceUpdatesRepository from "../repository/deviceUpdateRepository";
 
 export const getHourlyHistoricalData = async (
   startTime: number,
