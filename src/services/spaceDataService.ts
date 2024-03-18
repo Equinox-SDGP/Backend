@@ -4,6 +4,20 @@ import * as fusionSessionService from "./fusionSessionService";
 import * as spaceService from "./spaceService";
 import axios from "axios";
 
+export const getSpaceAggregatedData = async () => {
+  const spaceData = await spaceDataRepository.getRecentTotalSpaceData();
+  if (spaceData) {
+    return spaceData;
+  }
+
+  const spaceDataList = await fetchSpaceData();
+  await setSpaceData(spaceDataList);
+
+  const aggregatedSpaceData =
+    await spaceDataRepository.getRecentTotalSpaceData();
+  return aggregatedSpaceData;
+};
+
 export const getSpaceData = async () => {
   const recentSpaceData = await spaceDataRepository.getRecentSpaceData();
 

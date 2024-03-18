@@ -7,7 +7,7 @@ export const getSpaceDataList = async (
   next: NextFunction
 ) => {
   try {
-    const spaceData = await spaceDataService.getSpaceData();
+    const spaceData = await spaceDataService.getSpaceAggregatedData();
     res.status(200).send(spaceData);
   } catch (error) {
     console.error(error);
