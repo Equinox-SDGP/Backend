@@ -26,3 +26,14 @@ export const getRecentSpaceData = async () => {
 
   return spaceData;
 };
+
+export const getRecentTotalSpaceData = async () => {
+  const hourAgo = new Date(Date.now() - 60 * 60 * 1000);
+  const spaceData = await SpaceDataModel.find({
+    createdAt: { $gte: hourAgo },
+  })
+    .sort({ createdAt: -1 })
+    .exec();
+
+  return spaceData;
+}

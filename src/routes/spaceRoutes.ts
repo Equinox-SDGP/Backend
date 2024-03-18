@@ -22,16 +22,40 @@ import * as spaceDataController from "../controllers/spaceDataController";
  *      500:
  *        description: Server Error
  */
-router.get("/", spaceController.getSpacesList);
-
-router.get("/:id", spaceController.getSpace);
-
+router.get("/", spaceController.getSpaceDataList);
 /**
  * @swagger
- * '/space/data':
+ * '/space/{id}':
  *   get:
  *     tags:
  *       - Space Controller
+ *     summary: Getting space by id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The space id
+ *     responses:
+ *       201:
+ *         description: Information received
+ *       409:
+ *         description: Conflict
+ *       404:
+ *         description: Not Found
+ *       500:
+ *         description: Server Error
+ */
+router.get("/:id", spaceController.getSpace);
+
+/** POST Method */
+/**
+ * @swagger
+ * '/space/data':
+ *   post:
+ *     tags:
+ *       - Space Data Controller
  *     summary: Getting hourly space data
  *     responses:
  *       201:
@@ -43,7 +67,7 @@ router.get("/:id", spaceController.getSpace);
  *       500:
  *         description: Server Error
  */
-router.get("/data", spaceDataController.getHourlySpaceData);
+router.post("/data", spaceDataController.getSpaceDataList);
 
 /** PUT Method */
 /**
@@ -64,5 +88,23 @@ router.get("/data", spaceDataController.getHourlySpaceData);
  *         description: Server Error
  */
 router.put("/update", spaceController.updateSpaceListWithFusion);
+/**
+ * @swagger
+ * '/space/updateData':
+ *   put:
+ *     tags:
+ *       - Space Data Controller
+ *     summary: Updating list of space data with fusion
+ *     responses:
+ *       201:
+ *         description: Information received
+ *       409:
+ *         description: Conflict
+ *       404:
+ *         description: Not Found
+ *       500:
+ *         description: Server Error
+ */
+router.put("/updateData", spaceDataController.updateSpaceDataList);
 
 module.exports = router;

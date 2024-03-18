@@ -15,18 +15,15 @@ export const getSpacesList = async () => {
 
 export const getSpacesIdList = async () => {
   const spacesList = await getSpacesList();
-
   const spacesIdList = spacesList.map((space) => {
     return space._id;
   });
-
   return spacesIdList;
 };
 
 export const getSpacesIdListString = async () => {
   const spacesIdList = await getSpacesIdList();
   const spacesIdListString = spacesIdList.toString();
-  console.log(spacesIdListString);
   return spacesIdListString;
 };
 
@@ -45,25 +42,6 @@ export const getSpacesListFromFusion = async () => {
   );
 
   return spacesQuery.data.data.list;
-};
-
-export const getSpaceDataFromFusion = async (plantCodes: string[]) => {
-  let stationCodes = plantCodes.toString();
-  console.log(stationCodes);
-
-  const spacesQuery = await axios.post(
-    `${process.env.FUSIONSOLAR_API_BASE_URL}thirdData/getStationRealKpi`,
-    {
-      stationCodes,
-    },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "xsrf-token": await fusionSessionService.getRecentFusionSession(),
-      },
-    }
-  );
-  return spacesQuery.data.data;
 };
 
 export const getSpace = async (spaceId: string) => {

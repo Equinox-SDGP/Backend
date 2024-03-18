@@ -12,17 +12,20 @@ export interface ISpaceData {
   };
 }
 
-const spaceDataSchema = new Schema({
-  stationCode: { type: String, required: true },
-  dataItemMap: {
-    total_income: { type: Number, required: true },
-    total_power: { type: Number, required: true },
-    day_power: { type: Number, required: true },
-    day_income: { type: Number, required: true },
-    real_health_state: { type: Number, required: true },
-    month_power: { type: Number, required: true },
+const spaceDataSchema = new Schema(
+  {
+    stationCode: { type: String, required: true },
+    dataItemMap: {
+      total_income: { type: Number, required: true },
+      total_power: { type: Number, required: true },
+      day_power: { type: Number, required: true },
+      day_income: { type: Number, required: true },
+      real_health_state: { type: Number, required: true },
+      month_power: { type: Number, required: true },
+    },
   },
-});
+  { timestamps: true }
+);
 
 const spaceDataModel = model<ISpaceData>("SpaceData", spaceDataSchema);
 export default spaceDataModel;

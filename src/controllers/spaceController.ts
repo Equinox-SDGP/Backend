@@ -3,12 +3,13 @@ import * as spaceService from "../services/spaceService";
 import { IFusionSpace, ISpace } from "../repository/models/spaceModel";
 
 /** GET */
-export const getSpacesList = async (
+export const getSpaceDataList = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const spaces = await spaceService.getSpacesList();
+  console.log("spaces: " + spaces);
   if (spaces) res.status(200).json(spaces);
   else res.status(404).json({ message: "Spaces not found" });
 };

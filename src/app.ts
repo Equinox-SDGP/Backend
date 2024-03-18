@@ -68,7 +68,7 @@ cron.schedule(
 
 cron.schedule(
   "0 * * * *",
-  spaceDataController.getHourlySpaceData,
+  spaceDataController.updateSpaceDataList,
   {
     scheduled: true,
     timezone: "Asia/Colombo",
