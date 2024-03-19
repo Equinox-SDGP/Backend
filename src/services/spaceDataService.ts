@@ -4,18 +4,41 @@ import * as fusionSessionService from "./fusionSessionService";
 import * as spaceService from "./spaceService";
 import axios from "axios";
 
+export const getSpaceInformation = async () => {
+  const rawSpaceData = await getSpaceAggregatedData();
+  const spaceDataWithWeather = await Promise.all(
+    rawSpaceData.map(async (spaceData) => {
+      try {
+        const weatherData = await getCurrentWeatherData(
+          spaceData.spaceInfo.latitude,
+          spaceData.spaceInfo.longitude
+        );
+        console.log(weatherData.data);
+        const spaceDataWithWeatherData = {
+          ...spaceData,
+          weather: weatherData.data,
+        };
+        return spaceDataWithWeatherData;
+      } catch (error) {
+        console.error(error);
+        return spaceData;
+      }
+    })
+  );
+
+  return spaceDataWithWeather;
+};
+
 export const getSpaceAggregatedData = async () => {
-  const spaceData = await spaceDataRepository.getRecentTotalSpaceData();
-  if (spaceData) {
-    return spaceData;
+  let spaceData = await spaceDataRepository.getRecentTotalSpaceData();
+
+  if (!spaceData) {
+    const spaceDataList = await fetchSpaceData();
+    await setSpaceData(spaceDataList);
+    spaceData = await spaceDataRepository.getRecentTotalSpaceData();
   }
 
-  const spaceDataList = await fetchSpaceData();
-  await setSpaceData(spaceDataList);
-
-  const aggregatedSpaceData =
-    await spaceDataRepository.getRecentTotalSpaceData();
-  return aggregatedSpaceData;
+  return spaceData;
 };
 
 export const getSpaceData = async () => {
@@ -58,4 +81,11 @@ export const setSpaceData = async (spaceData: any) => {
   } else {
     console.log("Error setting space data");
   }
+};
+
+const getCurrentWeatherData = async (latitude: number, longitude: number) => {
+  const currentWeatherData = await axios.get(
+    `${process.env.OPENWEATHER_ONECALL_URL}?lat=${latitude}&lon=${longitude}&appid=${process.env.OPENWEATHER_API_KEY}&units=metric&exclude=minutely,hourly,daily,alerts`
+  );
+  return currentWeatherData;
 };

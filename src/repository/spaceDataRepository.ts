@@ -36,6 +36,7 @@ export const getRecentTotalSpaceData = async () => {
           createdAt: { $gte: hourAgo },
         },
       },
+      { $limit: 1 },
       {
         $lookup: {
           from: "spaces", // The collection to join with
@@ -43,11 +44,12 @@ export const getRecentTotalSpaceData = async () => {
           foreignField: "_id", // The field from the "space" collection
           as: "spaceInfo", // The field to add the joined data to
         },
+      },{
+        $unwind: "$spaceInfo"
       },
       {
         $project: {
           // Define the fields you want to include in the final output
-          _id: "$_id",
           stationCode: "$stationCode",
           // Include other fields from the "spaceData" collection as needed
           dataItemMap: "$dataItemMap",

@@ -69,6 +69,25 @@ router.get("/:id", spaceController.getSpace);
  */
 router.post("/data", spaceDataController.getSpaceDataList);
 
+/**
+ * @swagger
+ * '/space/info':
+ *   post:
+ *     tags:
+ *       - Space Data Controller
+ *     summary: Getting hourly space data
+ *     responses:
+ *       201:
+ *         description: Information received
+ *       409:
+ *         description: Conflict
+ *       404:
+ *         description: Not Found
+ *       500:
+ *         description: Server Error
+ */
+router.post("/info",spaceDataController.getSpaceInformation)
+
 /** PUT Method */
 /**
  * @swagger
