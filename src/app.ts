@@ -39,9 +39,8 @@ console.log(process.env.MONGO_URI);
 
 // Importing routes modules
 const userRouter = require("./routes/userRoutes");
-const deviceRouter = require("./routes/deviceRoutes");
-const deviceUpdatesRouter = require("./routes/deviceUpdatesRoutes");
 const spaceRouter = require("./routes/spaceRoutes");
+const spaceUpdatesRouter = require("./routes/spaceUpdatesRouter");
 
 // Set up swagger
 app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
@@ -53,8 +52,7 @@ app.use(bodyParser.json());
 // Setup the routes
 app.use("/user", userRouter);
 app.use("/space", spaceRouter);
-app.use("/device", deviceRouter);
-app.use("/deviceUpdates", deviceUpdatesRouter);
+app.use("/spaceUpdates",spaceUpdatesRouter);
 
 // Schedule the cron jobs
 cron.schedule(

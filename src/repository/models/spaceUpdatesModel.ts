@@ -1,21 +1,25 @@
 import mongoose, { Document, Schema } from "mongoose";
-import { IDevice } from "./deviceModel";
 
-export interface IHourlyUpdate extends Document {
-  _id: mongoose.Types.ObjectId;
+export enum UPDATE_INTERVAL {
+  HOUR = "hour",
+  DAY = "day",
+  MONTH = "month",
+  YEAR = "year",
+}
+export interface IUpdateSpace extends Document {
   dataItemMap: {
     radiation_intensity: string;
-    theory_power: string;
+    theory_power: number;
     inverter_power: number;
-    ongrid_power: string;
+    ongrid_power: number;
     power_profit: number;
   };
   stationCode: string;
   collectTime: number;
-  // Add other hourly update properties as needed
+  updateInterval: UPDATE_INTERVAL;
 }
 
-const hourlyUpdateSchema: Schema<IHourlyUpdate> = new Schema({
+const hourlyUpdateSchema: Schema<IUpdateSpace> = new Schema({
   _id: {
     type: Schema.Types.ObjectId,
     required: true,
@@ -26,7 +30,7 @@ const hourlyUpdateSchema: Schema<IHourlyUpdate> = new Schema({
       required: true,
     },
     theory_power: {
-      type: String,
+      type: Number,
       required: true,
     },
     inverter_power: {
@@ -34,7 +38,7 @@ const hourlyUpdateSchema: Schema<IHourlyUpdate> = new Schema({
       required: true,
     },
     ongrid_power: {
-      type: String,
+      type: Number,
       required: true,
     },
     power_profit: {
@@ -50,12 +54,15 @@ const hourlyUpdateSchema: Schema<IHourlyUpdate> = new Schema({
     type: Number,
     required: true,
   },
-  // Add other hourly update properties as needed
+  updateInterval: {
+    type: String,
+    required: true,
+  },
 });
 
-const HourlyUpdate = mongoose.model<IHourlyUpdate>(
-  "Mockdata",
+const UpdateSpace = mongoose.model<IUpdateSpace>(
+  "HourlyUpdateSpace",
   hourlyUpdateSchema
 );
 
-export default HourlyUpdate;
+export default UpdateSpace;

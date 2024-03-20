@@ -29,15 +29,31 @@ export const updateSpaceDataList = async (
   res: Response,
   next: NextFunction
 ) => {
+  console.log("Updating space data")
   const spaceData = await spaceDataService.fetchSpaceData();
   try {
     if (spaceData) {
-      await spaceDataService.setSpaceData(spaceData);
-      res.status(201).send("Space data updated");
+      const result = await spaceDataService.setSpaceData(spaceData);
+      res.status(201).json({ message: "Space data updated", result });
     }
-    res.status(200).send("No space data found from fusion solar api");
+    res.status(200).json({message: "No space data found from fusion solar api"});
   } catch (error) {
     console.error(error);
-    res.status(500).send("Error updating space data");
+    res.status(500).json({message: "Error updating space data"});
   }
 };
+
+export const updateSpaceDataListByTime = async () =>{
+  console.log("Updating space data by time")
+  const spaceData = await spaceDataService.fetchSpaceData();
+  console.log("Space data", spaceData)
+  try {
+    if (spaceData) {
+      const result = await spaceDataService.setSpaceData(spaceData);
+      console.log("Space data updated", result);
+    }
+    console.log("No space data found from fusion solar api");
+  } catch (error) {
+    console.error("Error updating space data", error);
+  }
+}
