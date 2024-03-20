@@ -1,7 +1,13 @@
 import express from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
+const cron = require("node-cron");
+
+import * as fusionSessionController from "./controllers/fusionSessionController";
+import * as spaceDataController from "./controllers/spaceDataController";
+
 import Logger from "js-logger";
+import "module-alias/register";
 
 const swaggerUI = require("swagger-ui-express");
 const swaggerSpec = require("./swagger");
@@ -18,7 +24,10 @@ Logger.useDefaults();
 
 // Connecting to the database
 mongoose
-  .connect("mongodb+srv://nimesh20221000:zQiXKdX7MBtXJqSA@equinoxdb.ivinrwy.mongodb.net/?retryWrites=true&w=majority" || "")
+  .connect(
+    "mongodb+srv://nimesh20221000:zQiXKdX7MBtXJqSA@equinoxdb.ivinrwy.mongodb.net/?retryWrites=true&w=majority" ||
+      ""
+  )
   .catch((err) => {
     console.log(err);
   })
@@ -26,12 +35,12 @@ mongoose
     console.log("Connected to the database");
   });
 
-  console.log(process.env.MONGO_URI);
-
+console.log(process.env.MONGO_URI);
 
 // Importing routes modules
 const userRouter = require("./routes/userRoutes");
-const deviceRouter = require("./routes/deviceRoutes");
+const spaceRouter = require("./routes/spaceRoutes");
+const spaceUpdatesRouter = require("./routes/spaceUpdatesRouter");
 
 // Set up swagger
 app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
@@ -42,7 +51,27 @@ app.use(bodyParser.json());
 
 // Setup the routes
 app.use("/user", userRouter);
-app.use("/device", deviceRouter);
+app.use("/space", spaceRouter);
+app.use("/spaceUpdates",spaceUpdatesRouter);
+
+// Schedule the cron jobs
+cron.schedule(
+  "*/30 * * * *",
+  fusionSessionController.setPeriodicFusionSession,
+  {
+    scheduled: true,
+    timezone: "Asia/Colombo",
+  }
+);
+
+cron.schedule(
+  "0 * * * *",
+  spaceDataController.updateSpaceDataList,
+  {
+    scheduled: true,
+    timezone: "Asia/Colombo",
+  }
+);
 
 // Route checking if the server is working
 app.get("/", (req, res) => {

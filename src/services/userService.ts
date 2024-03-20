@@ -1,6 +1,6 @@
 import Logger from "js-logger";
 import { IUser } from "../repository/models/userModel";
-import * as User from "../repository/user";
+import * as User from "../repository/userRepository";
 
 
 const mongoose = require("mongoose");
