@@ -18,6 +18,11 @@ export const getHourSpaceUpdatesFromFusion = async (
       },
     }
   );
+
+  if (hourlyUpdate.data.failCode === 407)
+    throw new Error(
+      "Too many requests to Fusion Solar API. Please try again later."
+    );
   return hourlyUpdate.data;
 };
 
@@ -38,6 +43,10 @@ export const getDaySpaceUpdatesFromFusion = async (
       },
     }
   );
+  if (dailyUpdate.data.failCode === 407)
+    throw new Error(
+      "Too many requests to Fusion Solar API. Please try again later."
+    );
   return dailyUpdate.data;
 };
 
@@ -58,6 +67,10 @@ export const getMonthSpaceUpdatesFromFusion = async (
       },
     }
   );
+  if (monthlyUpdate.data.failCode === 407)
+    throw new Error(
+      "Too many requests to Fusion Solar API. Please try again later."
+    );
   return monthlyUpdate.data;
 };
 
@@ -78,5 +91,21 @@ export const getYearSpaceUpdatesFromFusion = async (
       },
     }
   );
+  if (yearlyUpdate.data.failCode === 407)
+    throw new Error(
+      "Too many requests to Fusion Solar API. Please try again later."
+    );
   return yearlyUpdate.data;
 };
+
+export interface IFusionUpdateHourly {
+  collectTime: number;
+  stationCode: string;
+  dataItemMap: {
+    radiation_intensity: number | null;
+    power_profit: number | null;
+    theory_power: number | null;
+    ongrid_power: number | null;
+    inverter_power: number | null;
+  };
+}

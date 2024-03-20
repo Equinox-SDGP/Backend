@@ -6,6 +6,10 @@ export const addSpaceUpdate = async (spaceUpdate: IUpdateSpace) => {
   return newSpaceUpdate.save();
 };
 
+export const addSpaceUpdates = async (spaceUpdates: IUpdateSpace[]) => {
+  return UpdateSpaceModel.insertMany(spaceUpdates);
+};
+
 /** READ */
 export const getSpaceUpdates = async (
   stationCode: string,
@@ -13,13 +17,13 @@ export const getSpaceUpdates = async (
   endTime: number,
   timeInterval: string
 ) => {
-    const spaceUpdates = await UpdateSpaceModel.findOne({
-        stationCode,
-        collectTime: { $gte: startTime, $lte: endTime },
-        updateInterval: timeInterval,
-    })
-        .sort({ collectTime: -1 })
-        .exec();
-    
-    return spaceUpdates;
-}; 
+  const spaceUpdates = await UpdateSpaceModel.find({
+    stationCode,
+    collectTime: { $gte: startTime, $lte: endTime },
+    updateInterval: timeInterval,
+  })
+    .sort({ collectTime: -1 })
+    .exec();
+
+  return spaceUpdates;
+};

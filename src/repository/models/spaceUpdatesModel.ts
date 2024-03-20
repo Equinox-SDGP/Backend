@@ -8,11 +8,11 @@ export enum UPDATE_INTERVAL {
 }
 export interface IUpdateSpace extends Document {
   dataItemMap: {
-    radiation_intensity: string;
-    theory_power: number;
-    inverter_power: number;
-    ongrid_power: number;
-    power_profit: number;
+    radiation_intensity: string | null;
+    theory_power: number | null;
+    inverter_power: number | null;
+    ongrid_power: number | null;
+    power_profit: number | null;
   };
   stationCode: string;
   collectTime: number;
@@ -20,30 +20,26 @@ export interface IUpdateSpace extends Document {
 }
 
 const hourlyUpdateSchema: Schema<IUpdateSpace> = new Schema({
-  _id: {
-    type: Schema.Types.ObjectId,
-    required: true,
-  },
   dataItemMap: {
     radiation_intensity: {
       type: String,
-      required: true,
+      required: false,
     },
     theory_power: {
       type: Number,
-      required: true,
+      required: false,
     },
     inverter_power: {
       type: Number,
-      required: true,
+      required: false,
     },
     ongrid_power: {
       type: Number,
-      required: true,
+      required: false,
     },
     power_profit: {
       type: Number,
-      required: true,
+      required: false,
     },
   },
   stationCode: {
@@ -61,7 +57,7 @@ const hourlyUpdateSchema: Schema<IUpdateSpace> = new Schema({
 });
 
 const UpdateSpace = mongoose.model<IUpdateSpace>(
-  "HourlyUpdateSpace",
+  "SpaceUpdate",
   hourlyUpdateSchema
 );
 

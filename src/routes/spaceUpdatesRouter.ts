@@ -31,13 +31,13 @@ import * as spaceUpdatesController from "../controllers/spaceUpdatesController";
  *            properties:
  *             startTime:
  *              type: long
- *              default: 1589500800
+ *              default: 1710846070000
  *             endTime:
  *              type: long
- *              default: 1589599800
+ *              default: 1710932470000
  *             timeInterval:
  *              type: string
- *              default: day
+ *              default: hour
  *     responses:
  *      201:
  *        description: information received
@@ -66,14 +66,23 @@ router.post("/historical/:id", spaceUpdatesController.spaceUpdates);
  *             type: object
  *             required:
  *               - stationCode
- *               - collectTime
+ *               - startTime
+ *               - endTime
+ *               - timeInterval
  *             properties:
  *               stationCode:
  *                 type: string
  *                 default: NE=51002841
- *               collectTime:
- *                 type: long
- *                 default: 1708143208
+ *               startTime:
+ *                 type: number
+ *                 default: 1710846070000
+ *               endTime:
+ *                 type: number
+ *                 default: 1710932470000
+ *               timeInterval:
+ *                 type: string
+ *                 default: hour
+ *              
  *     responses:
  *       201:
  *         description: information received
