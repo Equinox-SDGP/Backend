@@ -27,6 +27,19 @@ jobs:
           npm install
           npm run build
 
+      - name: Creating the .env file
+        run: |
+          touch .env
+          echo PORT=3000 >> .env
+          echo MONGO_URI= ${{secrets.MONGO_URI}} >> .env
+          echo FUSIONSOLAR_API_BASE_URL= ${{secrets.FUSIONSOLAR_API_BASE_URL}} >> .env
+          echo FUSIONSOLAR_API_USERNAME= ${{secrets.FUSIONSOLAR_API_USERNAME}} >> .env
+          echo FUSIONSOLAR_API_SYSTEMCODE= ${{secrets.FUSIONSOLAR_API_SYSTEMCODE}} >> .env
+          echo OPENWEATHER_ONECALL_URL= ${{secrets.OPENWEATHER_ONECALL_URL}} >> .env
+          echo OPENWEATHER_API_KEY= ${{secrets.OPENWEATHER_API_KEY}} >> .env
+          cat .env
+
+
       - name: Archive build artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -54,4 +67,4 @@ jobs:
         with:
           app-name: 'Equinox-app'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_12554EB644C64AEEA56602E0E6F82A01 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
