@@ -1,18 +1,34 @@
 import { Request, Response, NextFunction } from "express";
 import * as spaceUpdatesService from "../services/spaceUpdatesService";
+import * as spaceService from "../services/spaceService";
 
-export const spaceUpdates = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getSpaceUpdates = async (req: Request, res: Response) => {
   const spaceId = req.params.id;
-  const { startTime, endTime, timeInterval } = req.body;
+  const collectTime = req.body.collectTime;
+  const timeInterval = req.body.timeInterval;
+
   try {
     const spaceData = await spaceUpdatesService.getSpaceUpdates(
       spaceId,
-      startTime,
-      endTime,
+      collectTime,
+      timeInterval
+    );
+    res.status(200).json(spaceData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching space data" });
+  }
+};
+
+export const getSpaceUpdatesGraph = async (req: Request, res: Response) => {
+  const spaceId = req.params.spaceId as string;
+  const collectTime = Number(req.query.collectTime as string);
+  const timeInterval = req.query.timeInterval as string;
+
+  try {
+    const spaceData = await spaceUpdatesService.getSpaceUpdatesGraph(
+      spaceId,
+      collectTime,
       timeInterval
     );
     res.status(200).json(spaceData);
@@ -24,20 +40,33 @@ export const spaceUpdates = async (
 
 export const saveSpaceUpdates = async (req: Request, res: Response) => {
   const spaceId = req.body.stationCode;
-  const startTime = req.body.startTime;
-  const endTime = req.body.endTime;
+  const collectTime = req.body.collectTime;
   const timeInterval = req.body.timeInterval;
 
   try {
     const spaceData = await spaceUpdatesService.saveSpaceUpdates(
       spaceId,
-      startTime,
-      endTime,
+      collectTime,
       timeInterval
     );
-    res.status(200).json(spaceData);
+    res.status(201).json(spaceData);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error saving space data" });
+  }
+};
+
+export const hourlySpaceUpdates = async () => {
+  try {
+    const spaceList = await spaceService.getSpacesIdList();
+
+    spaceList.forEach(async (spaceId) => {
+      const collectTime = new Date().getTime();
+      await spaceUpdatesService.saveSpaceUpdates(spaceId, collectTime, "day");
+    });
+    console.log("Updated hourly space data");
+
+  } catch (error) {
+    console.log(error);
   }
 };

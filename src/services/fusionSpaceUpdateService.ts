@@ -23,6 +23,7 @@ export const getHourSpaceUpdatesFromFusion = async (
     throw new Error(
       "Too many requests to Fusion Solar API. Please try again later."
     );
+    console.log(hourlyUpdate.data)
   return hourlyUpdate.data;
 };
 

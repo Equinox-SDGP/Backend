@@ -22,7 +22,7 @@ export const getSpaceUpdates = async (
     collectTime: { $gte: startTime, $lte: endTime },
     updateInterval: timeInterval,
   })
-    .sort({ collectTime: -1 })
+    .sort()
     .exec();
 
   return spaceUpdates;

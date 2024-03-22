@@ -5,6 +5,7 @@ const cron = require("node-cron");
 
 import * as fusionSessionController from "./controllers/fusionSessionController";
 import * as spaceDataController from "./controllers/spaceDataController";
+import * as spaceUpdatesController from "./controllers/spaceUpdatesController";
 
 import Logger from "js-logger";
 import "module-alias/register";
@@ -65,13 +66,24 @@ cron.schedule(
 );
 
 cron.schedule(
-  "0 * * * *",
-  spaceDataController.updateSpaceDataList,
+  "*/55 * * * *",
+  spaceDataController.updateSpaceDataListByTime,
   {
     scheduled: true,
     timezone: "Asia/Colombo",
   }
 );
+
+cron.schedule(
+  "0 * * * *",
+  spaceUpdatesController.hourlySpaceUpdates,
+  {
+    scheduled: true,
+    timezone: "Asia/Colombo",
+  }
+)
+
+
 
 // Route checking if the server is working
 app.get("/", (req, res) => {

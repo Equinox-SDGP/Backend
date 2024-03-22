@@ -72,12 +72,12 @@ export const fetchSpaceData = async () => {
 };
 
 export const setSpaceData = async (spaceData: any) => {
-  if (spaceData !== undefined) {
+  if (spaceData !== undefined && spaceData.data.length > 0) {
     const spaceDataList = spaceData.data as ISpaceData[];
 
-    for (const spaceData of spaceDataList) {
+    spaceDataList.forEach(async (spaceData) => {
       await spaceDataRepository.addSpaceData(spaceData);
-    }
+    });
   } else {
     console.log("Error setting space data");
   }
