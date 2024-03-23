@@ -56,28 +56,34 @@ export const getSpaceData = async () => {
 
 export const fetchSpaceData = async () => {
   const stationCodes = await spaceService.getSpacesIdListString();
-  const response = await axios.post(
-    `${process.env.FUSIONSOLAR_API_BASE_URL}thirdData/getStationRealKpi`,
-    {
-      stationCodes: stationCodes,
-    },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "xsrf-token": await fusionSessionService.getRecentFusionSession(),
+  axios
+    .post(
+      `${process.env.FUSIONSOLAR_API_BASE_URL}/thirdData/getStationRealKpi`,
+      {
+        stationCodes: stationCodes,
       },
-    }
-  );
-  return response.data;
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "xsrf-token": await fusionSessionService.getRecentFusionSession(),
+        },
+      }
+    )
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      return error;
+    });
 };
 
 export const setSpaceData = async (spaceData: any) => {
-  if (spaceData !== undefined) {
+  if (spaceData !== undefined && spaceData.data.length > 0) {
     const spaceDataList = spaceData.data as ISpaceData[];
 
-    for (const spaceData of spaceDataList) {
+    spaceDataList.forEach(async (spaceData) => {
       await spaceDataRepository.addSpaceData(spaceData);
-    }
+    });
   } else {
     console.log("Error setting space data");
   }

@@ -3,6 +3,7 @@ import mongoose, { Document, Schema } from "mongoose";
 export enum UPDATE_INTERVAL {
   HOUR = "hour",
   DAY = "day",
+  WEEK =  "week",
   MONTH = "month",
   YEAR = "year",
 }
