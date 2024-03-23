@@ -34,9 +34,8 @@ export const getSpaceUpdatesGraph = async (
   );
   console.log(updatesFromDatabase);
 
-  let newModifiedUpdates = [];
   if (updatesFromDatabase.length === 0) {
-    newModifiedUpdates = await saveSpaceUpdates(
+    const newModifiedUpdates = await saveSpaceUpdates(
       spaceId,
       collectTime,
       timeInterval

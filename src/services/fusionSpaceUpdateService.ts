@@ -1,6 +1,11 @@
 import axios from "axios";
 import * as fusionSessionService from "./fusionSessionService";
 
+/**
+ * Getting hourly updates from fusion
+ * @param spaceId 
+ * @param collectTime 
+ */
 export const getHourSpaceUpdatesFromFusion = async (
   spaceId: string,
   collectTime: number
@@ -31,6 +36,11 @@ export const getHourSpaceUpdatesFromFusion = async (
     });
 };
 
+/**
+ * Getting daily updates from Fusion
+ * @param spaceId 
+ * @param collectTime 
+ */
 export const getDaySpaceUpdatesFromFusion = async (
   spaceId: string,
   collectTime: number
@@ -61,6 +71,11 @@ export const getDaySpaceUpdatesFromFusion = async (
     });
 };
 
+/**
+ *  Getting monthly updates from fusion
+ * @param spaceId 
+ * @param collectTime 
+ */
 export const getMonthSpaceUpdatesFromFusion = async (
   spaceId: string,
   collectTime: number
@@ -91,6 +106,11 @@ export const getMonthSpaceUpdatesFromFusion = async (
     });
 };
 
+/**
+ * Getting yearly updates from Fusion
+ * @param spaceId 
+ * @param collectTime 
+ */
 export const getYearSpaceUpdatesFromFusion = async (
   spaceId: string,
   collectTime: number

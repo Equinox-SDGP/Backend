@@ -1,4 +1,6 @@
 import SpaceDataModel, { ISpaceData } from "./models/spaceDataModel";
+import spaceModel from "./models/spaceModel";
+import SpaceModel from "./models/spaceModel";
 
 /** CREATE */
 export const addSpaceData = async (spaceData: ISpaceData) => {
@@ -60,6 +62,39 @@ export const getRecentTotalSpaceData = async () => {
   ])
     .sort({ createdAt: -1 })
     .exec();
+
+  return spaceData;
+};
+
+export const getRecentSpaceUpdatesfromAll = async () => {
+  const hourAgo = new Date(Date.now() - 60 * 60 * 1000);
+  const spaceData = await spaceModel.aggregate([
+    {
+      
+      $lookup: {
+        from: "spacedatas",
+        localField: "_id",
+        foreignField: "stationCode",
+        as: "spaceData",
+      },
+    },
+    {
+      $unwind: "$spaceData",
+    },
+    {
+      $project: {
+        _id: 0,
+        capacity: "$capacity",
+        latitude: "$latitude",
+        longitude: "$longitude",
+        plantName: "$plantName",
+        plantAddress: "$plantAddress",
+        stationCode: "$_id",
+        dataItemMap: "$spaceData.dataItemMap",
+        createdAt: "$spaceData.createdAt",
+      },
+    },
+  ]);
 
   return spaceData;
 };

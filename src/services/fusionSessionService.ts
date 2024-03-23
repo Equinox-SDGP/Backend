@@ -23,10 +23,8 @@ export const getRecentFusionSession = async () => {
  * @param token
  */
 export const setFusionToken = async (token: string | void) => {
-  if (token !== null && token !== undefined) {
+  if (token !== null && typeof token === "object") {
     await fusionSessionRepository.setFusionSession(token);
-  } else {
-    console.log("Error setting token");
   }
 };
 
@@ -40,7 +38,8 @@ export const getFusionToken = async () => {
       systemCode: process.env.FUSIONSOLAR_API_SYSTEMCODE,
     })
     .then((response: AxiosResponse) => {
-      return response.headers["xsrf-token"];
+      const token = response.headers["xsrf-token"];
+      return token;
     })
     .catch((error: AxiosError) => {
       throw new Error("Error fetching token " + error.message);
