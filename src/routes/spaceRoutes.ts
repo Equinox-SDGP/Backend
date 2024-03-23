@@ -86,7 +86,7 @@ router.post("/data", spaceDataController.getSpaceDataList);
  *       500:
  *         description: Server Error
  */
-router.post("/info",spaceDataController.getSpaceInformation)
+router.post("/info", spaceDataController.getSpaceInformation);
 
 /** PUT Method */
 /**

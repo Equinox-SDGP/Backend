@@ -6,12 +6,13 @@ import axios from "axios";
 
 export const getSpaceInformation = async () => {
   const rawSpaceData = await getSpaceAggregatedData();
+  console.log(rawSpaceData);
   const spaceDataWithWeather = await Promise.all(
     rawSpaceData.map(async (spaceData) => {
       try {
         const weatherData = await getCurrentWeatherData(
-          spaceData.spaceInfo.latitude,
-          spaceData.spaceInfo.longitude
+          spaceData.latitude,
+          spaceData.longitude
         );
         console.log(weatherData.data);
         const spaceDataWithWeatherData = {
@@ -30,7 +31,7 @@ export const getSpaceInformation = async () => {
 };
 
 export const getSpaceAggregatedData = async () => {
-  let spaceData = await spaceDataRepository.getRecentTotalSpaceData();
+  let spaceData = await spaceDataRepository.getRecentSpaceUpdatesfromAll();
 
   if (!spaceData) {
     const spaceDataList = await fetchSpaceData();
