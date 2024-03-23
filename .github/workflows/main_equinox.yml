@@ -20,6 +20,18 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
+          
+      - name: Creating the .env file
+        run: |
+          touch .env
+          echo PORT=3000 >> .env
+          echo MONGO_URI= ${{secrets.MONGO_URI}} >> .env
+          echo FUSIONSOLAR_API_BASE_URL= ${{secrets.FUSIONSOLAR_API_BASE_URL}} >> .env
+          echo FUSIONSOLAR_API_USERNAME= ${{secrets.FUSIONSOLAR_API_USERNAME}} >> .env
+          echo FUSIONSOLAR_API_SYSTEMCODE= ${{secrets.FUSIONSOLAR_API_SYSTEMCODE}} >> .env
+          echo OPENWEATHER_ONECALL_URL= ${{secrets.OPENWEATHER_ONECALL_URL}} >> .env
+          echo OPENWEATHER_API_KEY= ${{secrets.OPENWEATHER_API_KEY}} >> .env
+          cat .env
 
       - name: npm install, build, and test
         run: |
