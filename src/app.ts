@@ -25,10 +25,7 @@ Logger.useDefaults();
 
 // Connecting to the database
 mongoose
-  .connect(
-    "mongodb+srv://nimesh20221000:zQiXKdX7MBtXJqSA@equinoxdb.ivinrwy.mongodb.net/?retryWrites=true&w=majority" ||
-      ""
-  )
+  .connect(process.env.MONGO_URI || "")
   .catch((err) => {
     console.log(err);
   })
@@ -53,7 +50,7 @@ app.use(bodyParser.json());
 // Setup the routes
 app.use("/user", userRouter);
 app.use("/space", spaceRouter);
-app.use("/spaceUpdates",spaceUpdatesRouter);
+app.use("/spaceUpdates", spaceUpdatesRouter);
 
 // Schedule the cron jobs
 cron.schedule(
@@ -73,6 +70,10 @@ cron.schedule(
     timezone: "Asia/Colombo",
   }
 );
+cron.schedule("0 * * * *", spaceDataController.updateSpaceDataList, {
+  scheduled: true,
+  timezone: "Asia/Colombo",
+});
 
 cron.schedule(
   "0 * * * *",
