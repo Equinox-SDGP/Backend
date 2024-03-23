@@ -56,19 +56,25 @@ export const getSpaceData = async () => {
 
 export const fetchSpaceData = async () => {
   const stationCodes = await spaceService.getSpacesIdListString();
-  const response = await axios.post(
-    `${process.env.FUSIONSOLAR_API_BASE_URL}thirdData/getStationRealKpi`,
-    {
-      stationCodes: stationCodes,
-    },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "xsrf-token": await fusionSessionService.getRecentFusionSession(),
+  axios
+    .post(
+      `${process.env.FUSIONSOLAR_API_BASE_URL}/thirdData/getStationRealKpi`,
+      {
+        stationCodes: stationCodes,
       },
-    }
-  );
-  return response.data;
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "xsrf-token": await fusionSessionService.getRecentFusionSession(),
+        },
+      }
+    )
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      return error;
+    });
 };
 
 export const setSpaceData = async (spaceData: any) => {

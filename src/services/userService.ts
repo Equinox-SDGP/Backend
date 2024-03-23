@@ -2,7 +2,6 @@ import Logger from "js-logger";
 import { IUser } from "../repository/models/userModel";
 import * as User from "../repository/userRepository";
 
-
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
@@ -14,7 +13,7 @@ export const createUser = async (userData: IUser) => {
       } else {
         userData["password"] = hash;
         userData["_id"] = new mongoose.Types.ObjectId();
-        
+
         User.createUser(userData);
         resolve(userData);
       }
@@ -30,16 +29,14 @@ export const verifyUser = async (userData: IUser) => {
   return Promise.resolve(null);
 };
 
-export const getUser = async(userId: string) => {
+export const getUser = async (userId: string) => {
   return User.getUser(userId);
-}
+};
 
-export const updateUser = async(userId: string, userData: IUser) => {
+export const updateUser = async (userId: string, userData: IUser) => {
   return User.updateUser(userId, userData);
-}
+};
 
-export const deleteUser = async(userId: string) => {
+export const deleteUser = async (userId: string) => {
   return User.deleteUser(userId);
-}
-
-
+};

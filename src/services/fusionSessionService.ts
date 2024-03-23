@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 
 import * as fusionSessionRepository from "../repository/fusionSessionRepository";
 
@@ -12,7 +12,6 @@ export const getRecentFusionSession = async () => {
   if (recentToken) {
     return recentToken;
   }
-
   const token = await getFusionToken();
   setFusionToken(token);
 
@@ -23,8 +22,8 @@ export const getRecentFusionSession = async () => {
  * Setting Fusion Token in the database
  * @param token
  */
-export const setFusionToken = async (token: string) => {
-  if (token !== null) {
+export const setFusionToken = async (token: string | void) => {
+  if (token !== null && token !== undefined) {
     await fusionSessionRepository.setFusionSession(token);
   } else {
     console.log("Error setting token");
@@ -35,20 +34,15 @@ export const setFusionToken = async (token: string) => {
  * Getting Fusion Token from the Fusion Solar API
  */
 export const getFusionToken = async () => {
-  try {
-    const response = await axios.post(
-      `${process.env.FUSIONSOLAR_API_BASE_URL}thirdData/login`,
-      {
-        userName: process.env.FUSIONSOLAR_API_USERNAME,
-        systemCode: process.env.FUSIONSOLAR_API_SYSTEMCODE,
-      }
-    );
-    const token = response.headers["xsrf-token"];
-
-    return token;
-  } catch (e) {
-    const error = e as AxiosError;
-    console.log("Error fetching token: ", error.message);
-    return null;
-  }
+  axios
+    .post(`${process.env.FUSIONSOLAR_API_BASE_URL}/thirdData/login`, {
+      userName: process.env.FUSIONSOLAR_API_USERNAME,
+      systemCode: process.env.FUSIONSOLAR_API_SYSTEMCODE,
+    })
+    .then((response: AxiosResponse) => {
+      return response.headers["xsrf-token"];
+    })
+    .catch((error: AxiosError) => {
+      throw new Error("Error fetching token " + error.message);
+    });
 };

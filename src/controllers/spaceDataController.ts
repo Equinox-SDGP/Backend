@@ -32,7 +32,7 @@ export const updateSpaceDataList = async (
   console.log("Updating space data");
   const spaceData = await spaceDataService.fetchSpaceData();
   try {
-    if (spaceData) {
+    if (spaceData !== undefined) {
       const result = await spaceDataService.setSpaceData(spaceData);
       res.status(201).json({ message: "Space data updated", result });
     }
@@ -49,7 +49,7 @@ export const updateSpaceDataListByTime = async () => {
   console.log("Updating space data by time");
   const spaceData = await spaceDataService.fetchSpaceData();
   try {
-    if (spaceData) {
+    if (spaceData !== undefined) {
       await spaceDataService.setSpaceData(spaceData);
       console.log("Space data updated");
     }

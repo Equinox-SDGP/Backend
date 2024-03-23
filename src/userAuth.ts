@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 import passport from "passport";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import User, { IUser } from "../src/repository/models/userModel";
-import fetch from "node-fetch";
 
 const router = express.Router();
 const bcrypt = require("bcrypt");

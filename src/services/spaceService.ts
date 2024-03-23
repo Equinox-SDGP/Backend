@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import * as fusionSessionService from "../services/fusionSessionService";
 import * as SpaceRepository from "../repository/spaceRepository";
 import { ISpace } from "../repository/models/spaceModel";
@@ -28,20 +28,25 @@ export const getSpacesIdListString = async () => {
 };
 
 export const getSpacesListFromFusion = async () => {
-  const spacesQuery = await axios.post(
-    `${process.env.FUSIONSOLAR_API_BASE_URL}thirdData/stations`,
-    {
-      pageNo: 1,
-    },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "xsrf-token": await fusionSessionService.getRecentFusionSession(),
+  axios
+    .post(
+      `${process.env.FUSIONSOLAR_API_BASE_URL}/thirdData/stations`,
+      {
+        pageNo: 1,
       },
-    }
-  );
-
-  return spacesQuery.data.data.list;
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "xsrf-token": await fusionSessionService.getRecentFusionSession(),
+        },
+      }
+    )
+    .then((response: AxiosResponse) => {
+      return response.data.data.list;
+    })
+    .catch((error: AxiosError) => {
+      return error;
+    });
 };
 
 export const getSpace = async (spaceId: string) => {

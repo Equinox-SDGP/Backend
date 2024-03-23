@@ -17,7 +17,6 @@ import {
   convertToGraphDataWeek,
   convertToGraphDataYear,
 } from "./spaceGraphService";
-import { time } from "console";
 
 /** READ FUNCTIONS */
 export const getSpaceUpdatesGraph = async (
@@ -35,8 +34,13 @@ export const getSpaceUpdatesGraph = async (
   );
   console.log(updatesFromDatabase);
 
+  let newModifiedUpdates = [];
   if (updatesFromDatabase.length === 0) {
-    const newModifiedUpdates = await saveSpaceUpdates(spaceId, collectTime, timeInterval);
+    newModifiedUpdates = await saveSpaceUpdates(
+      spaceId,
+      collectTime,
+      timeInterval
+    );
   }
 
   if (timeInterval === UPDATE_INTERVAL.DAY) {
@@ -112,7 +116,7 @@ export const saveSpaceUpdates = async (
   });
 
   // Fetch updates from the Fusion Solar API based on the specified time interval
-  let updatesFromFusion = [];
+  let updatesFromFusion = [] as any;
   try {
     switch (timeInterval) {
       case UPDATE_INTERVAL.DAY:
