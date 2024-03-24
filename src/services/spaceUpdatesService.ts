@@ -24,23 +24,11 @@ export const getSpaceUpdatesGraph = async (
   collectTime: number,
   timeInterval: string
 ) => {
-  console.log(spaceId, collectTime, timeInterval);
-  const [startTime, endTime] = await timeDuration(collectTime, timeInterval);
-  const updatesFromDatabase = await spaceUpdatesRepository.getSpaceUpdates(
+  const updatesFromDatabase = await saveSpaceUpdates(
     spaceId,
-    startTime,
-    endTime,
+    collectTime,
     timeInterval
   );
-  console.log(updatesFromDatabase);
-
-  if (updatesFromDatabase.length === 0) {
-    const newModifiedUpdates = await saveSpaceUpdates(
-      spaceId,
-      collectTime,
-      timeInterval
-    );
-  }
 
   if (timeInterval === UPDATE_INTERVAL.DAY) {
     return await convertToGraphDataDay(updatesFromDatabase);
@@ -107,6 +95,7 @@ export const saveSpaceUpdates = async (
     endTime,
     await timeIntervalMapper(timeInterval)
   );
+  console.log(updatesFromDatabase);
 
   // Determine the fetch time based on the latest collect time from the database
   let fetchTime = startTime;
@@ -153,25 +142,27 @@ export const saveSpaceUpdates = async (
   // If no updates are found in the database, return the updates from Fusion Solar API
   if (updatesFromFusion === undefined) return updatesFromDatabase;
 
-  // Transform and filter Fusion Solar updates and save them to the database
-  const updatesToSaveArray: IUpdateSpace[] = await Promise.all(
-    updatesFromFusion.data
-      .filter((element: IFusionUpdateHourly) => element.collectTime > fetchTime)
-      .map((element: IFusionUpdateHourly) => ({
-        dataItemMap: {
-          radiation_intensity: element.dataItemMap.radiation_intensity,
-          theory_power: element.dataItemMap.theory_power,
-          inverter_power: element.dataItemMap.inverter_power,
-          ongrid_power: element.dataItemMap.ongrid_power,
-          power_profit: element.dataItemMap.power_profit,
-        },
-        stationCode: element.stationCode,
-        collectTime: element.collectTime,
-        updateInterval: timeIntervalMapper(timeInterval),
-      }))
-  );
-
-  await spaceUpdatesRepository.addSpaceUpdates(updatesToSaveArray);
+  if (Array.isArray(updatesFromFusion.data)) {
+    const updatesToSaveArray: IUpdateSpace[] = await Promise.all(
+      updatesFromFusion.data
+        .filter(
+          (element: IFusionUpdateHourly) => element.collectTime > fetchTime
+        )
+        .map((element: IFusionUpdateHourly) => ({
+          dataItemMap: {
+            radiation_intensity: element.dataItemMap.radiation_intensity,
+            theory_power: element.dataItemMap.theory_power,
+            inverter_power: element.dataItemMap.inverter_power,
+            ongrid_power: element.dataItemMap.ongrid_power,
+            power_profit: element.dataItemMap.power_profit,
+          },
+          stationCode: element.stationCode,
+          collectTime: element.collectTime,
+          updateInterval: timeIntervalMapper(timeInterval),
+        }))
+    );
+    await spaceUpdatesRepository.addSpaceUpdates(updatesToSaveArray);
+  }
 
   // Return the updated space updates from the database
   const spaceUpdatesFromDB: IUpdateSpace[] =
@@ -187,7 +178,7 @@ export const saveSpaceUpdates = async (
 
 /**  HELPER FUNCTIONS */
 
-/**
+/** This function maps the time interval to the corresponding time unit
  * @param timeInterval
  * @returns
  */
@@ -206,6 +197,11 @@ const timeIntervalMapper = (timeInterval: string) => {
   }
 };
 
+/** This function returns the start and end time of a given time interval
+ * @param timeStampUnix
+ * @param timeInterval
+ * @returns [startTime, endTime]
+ */
 const timeDuration = async (
   timeStampUnix: number,
   timeInterval: string
@@ -233,6 +229,5 @@ const timeDuration = async (
     default:
       throw new Error("Invalid time interval");
   }
-
   return [startTime, endTime];
 };

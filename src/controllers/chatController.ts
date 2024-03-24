@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
-import botApiService from '../services/botApiService';
-import databaseService from '../services/databaseService';
+import { Request, Response } from "express";
+import * as botService from "../services/botApiService";
+import databaseService from "../services/databaseService";
 
 class ChatController {
   static async saveUserMessage(req: Request, res: Response): Promise<void> {
@@ -14,10 +14,11 @@ class ChatController {
 
   static async getBotResponse(req: Request, res: Response): Promise<void> {
     // Fetch user message and context from the MongoDB Atlas database
-    const userMessage = await databaseService.fetchUserMessage();
+    const userMessage = req.body.message;
+    console.log(userMessage);
 
     // Send request to chatbot API to get bot response
-    const botResponse = await botApiService.getBotResponse(userMessage);
+    const botResponse = await botService.getBotResponse(userMessage);
 
     res.status(200).json({ botResponse });
   }
