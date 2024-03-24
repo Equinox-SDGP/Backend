@@ -10,7 +10,7 @@
   "author": "nimeshaperi <112054998+nimeshaperi@users.noreply.github.com>",
   "license": "MIT",
   "scripts": {
-    "build": "npx tsc",
+    "build": "tsc",
     "test": "jest",
     "start": "node dist/app.js",
     "dev": "ts-node-dev src/app.ts"

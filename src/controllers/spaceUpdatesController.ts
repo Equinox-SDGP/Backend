@@ -13,10 +13,10 @@ export const getSpaceUpdates = async (req: Request, res: Response) => {
       collectTime,
       timeInterval
     );
-    res.status(200).json(spaceData);
+    return res.status(200).json(spaceData);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error fetching space data" });
+    return res.status(500).json({ message: "Error fetching space data" });
   }
 };
 
@@ -31,10 +31,10 @@ export const getSpaceUpdatesGraph = async (req: Request, res: Response) => {
       collectTime,
       timeInterval
     );
-    res.status(200).json(spaceData);
+    return res.status(200).json(spaceData);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error fetching space data" });
+    return res.status(500).json({ message: "Error fetching space data" });
   }
 };
 
@@ -49,10 +49,10 @@ export const saveSpaceUpdates = async (req: Request, res: Response) => {
       collectTime,
       timeInterval
     );
-    res.status(201).json(spaceData);
+    return res.status(201).json(spaceData);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error saving space data" });
+    return res.status(500).json({ message: "Error saving space data" });
   }
 };
 
@@ -65,7 +65,6 @@ export const hourlySpaceUpdates = async () => {
       await spaceUpdatesService.saveSpaceUpdates(spaceId, collectTime, "day");
     });
     console.log("Updated hourly space data");
-
   } catch (error) {
     console.log(error);
   }

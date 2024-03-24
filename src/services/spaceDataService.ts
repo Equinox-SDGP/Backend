@@ -57,8 +57,8 @@ export const getSpaceData = async () => {
 
 export const fetchSpaceData = async () => {
   const stationCodes = await spaceService.getSpacesIdListString();
-  axios
-    .post(
+  try {
+    const response = await axios.post(
       `${process.env.FUSIONSOLAR_API_BASE_URL}/thirdData/getStationRealKpi`,
       {
         stationCodes: stationCodes,
@@ -69,17 +69,20 @@ export const fetchSpaceData = async () => {
           "xsrf-token": await fusionSessionService.getRecentFusionSession(),
         },
       }
-    )
-    .then((response) => {
-      return response.data;
-    })
-    .catch((error) => {
-      return error;
-    });
+    );
+    if (response.data.data.failCode === 407) {
+      throw new Error(
+        "Error 407: Access frequency is too high, please try again later."
+      );
+    }
+    return response.data;
+  } catch (error: any) {
+    return error.message;
+  }
 };
 
 export const setSpaceData = async (spaceData: any) => {
-  if (spaceData !== undefined && spaceData.data.length > 0) {
+  if (spaceData !== undefined && Array.isArray(spaceData.data) && spaceData.data.length > 0) {
     const spaceDataList = spaceData.data as ISpaceData[];
 
     spaceDataList.forEach(async (spaceData) => {

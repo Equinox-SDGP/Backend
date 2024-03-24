@@ -3,15 +3,16 @@ import * as fusionSessionService from "./fusionSessionService";
 
 /**
  * Getting hourly updates from fusion
- * @param spaceId 
- * @param collectTime 
+ * @param spaceId
+ * @param collectTime
  */
 export const getHourSpaceUpdatesFromFusion = async (
   spaceId: string,
   collectTime: number
 ) => {
-  axios
-    .post(
+  try {
+    const xsrfToken = await fusionSessionService.getRecentFusionSession();
+    const response = await axios.post(
       `${process.env.FUSIONSOLAR_API_BASE_URL}/thirdData/getKpiStationHour`,
       {
         stationCodes: spaceId,
@@ -20,33 +21,37 @@ export const getHourSpaceUpdatesFromFusion = async (
       {
         headers: {
           "Content-Type": "application/json",
-          "xsrf-token": await fusionSessionService.getRecentFusionSession(),
+          "xsrf-token": xsrfToken,
         },
       }
-    )
-    .then((response) => {
-      if (response.data.failCode === 407)
-        throw new Error(
-          "Too many requests to Fusion Solar API. Please try again later."
-        );
-      return response.data;
-    })
-    .catch((error) => {
-      return error;
-    });
+    );
+
+    if (response.data.failCode === 407) {
+      throw new Error(
+        "Too many requests to Fusion Solar API. Please try again later."
+      );
+    }
+
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      "Error fetching hourly updates from Fusion Solar API: " + error.message
+    );
+  }
 };
 
 /**
  * Getting daily updates from Fusion
- * @param spaceId 
- * @param collectTime 
+ * @param spaceId
+ * @param collectTime
  */
 export const getDaySpaceUpdatesFromFusion = async (
   spaceId: string,
   collectTime: number
 ) => {
-  axios
-    .post(
+  try {
+    const xsrfToken = await fusionSessionService.getRecentFusionSession();
+    const response = await axios.post(
       `${process.env.FUSIONSOLAR_API_BASE_URL}/thirdData/getKpiStationDay`,
       {
         stationCodes: spaceId,
@@ -55,33 +60,37 @@ export const getDaySpaceUpdatesFromFusion = async (
       {
         headers: {
           "Content-Type": "application/json",
-          "xsrf-token": await fusionSessionService.getRecentFusionSession(),
+          "xsrf-token": xsrfToken,
         },
       }
-    )
-    .then((response) => {
-      if (response.data.failCode === 407)
-        throw new Error(
-          "Too many requests to Fusion Solar API. Please try again later."
-        );
-      return response.data;
-    })
-    .catch((error) => {
-      return error;
-    });
+    );
+
+    if (response.data.failCode === 407) {
+      throw new Error(
+        "Too many requests to Fusion Solar API. Please try again later."
+      );
+    }
+
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      "Error fetching daily updates from Fusion Solar API: " + error.message
+    );
+  }
 };
 
 /**
  *  Getting monthly updates from fusion
- * @param spaceId 
- * @param collectTime 
+ * @param spaceId
+ * @param collectTime
  */
 export const getMonthSpaceUpdatesFromFusion = async (
   spaceId: string,
   collectTime: number
 ) => {
-  axios
-    .post(
+  try {
+    const xsrfToken = await fusionSessionService.getRecentFusionSession();
+    const response = await axios.post(
       `${process.env.FUSIONSOLAR_API_BASE_URL}/thirdData/getKpiStationMonth`,
       {
         stationCodes: spaceId,
@@ -90,33 +99,36 @@ export const getMonthSpaceUpdatesFromFusion = async (
       {
         headers: {
           "Content-Type": "application/json",
-          "xsrf-token": await fusionSessionService.getRecentFusionSession(),
+          "xsrf-token": xsrfToken,
         },
       }
-    )
-    .then((response) => {
-      if (response.data.failCode === 407)
-        throw new Error(
-          "Too many requests to Fusion Solar API. Please try again later."
-        );
-      return response.data;
-    })
-    .catch((error) => {
-      return error;
-    });
+    );
+
+    if (response.data.failCode === 407) {
+      throw new Error(
+        "Too many requests to Fusion Solar API. Please try again later."
+      );
+    }
+
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      "Error fetching monthly updates from Fusion Solar API: " + error.message
+    );
+  }
 };
 
 /**
  * Getting yearly updates from Fusion
- * @param spaceId 
- * @param collectTime 
+ * @param spaceId
+ * @param collectTime
  */
 export const getYearSpaceUpdatesFromFusion = async (
   spaceId: string,
   collectTime: number
 ) => {
-  axios
-    .post(
+  try {
+    const response = await axios.post(
       `${process.env.FUSIONSOLAR_API_BASE_URL}/thirdData/getKpiStationYear`,
       {
         stationCodes: spaceId,
@@ -128,17 +140,15 @@ export const getYearSpaceUpdatesFromFusion = async (
           "xsrf-token": await fusionSessionService.getRecentFusionSession(),
         },
       }
-    )
-    .then((response) => {
-      if (response.data.failCode === 407)
-        throw new Error(
-          "Too many requests to Fusion Solar API. Please try again later."
-        );
-      return response.data;
-    })
-    .catch((error) => {
-      return error;
-    });
+    );
+    if (response.data.failCode === 407)
+      throw new Error(
+        "Too many requests to Fusion Solar API. Please try again later."
+      );
+    return response.data;
+  } catch (error) {
+    return error;
+  }
 };
 
 export interface IFusionUpdateHourly {
