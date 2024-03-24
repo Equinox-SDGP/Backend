@@ -42,6 +42,7 @@ console.log(process.env.MONGO_URI);
 const userRouter = require("./routes/userRoutes");
 const spaceRouter = require("./routes/spaceRoutes");
 const spaceUpdatesRouter = require("./routes/spaceUpdatesRouter");
+const chatbotRouter = require("./routes/chatbotRouter");
 
 // Set up swagger
 app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
@@ -54,6 +55,7 @@ app.use(bodyParser.json());
 app.use("/user", userRouter);
 app.use("/space", spaceRouter);
 app.use("/spaceUpdates",spaceUpdatesRouter);
+app.use("/chatbot", chatbotRouter);
 
 // Schedule the cron jobs
 cron.schedule(

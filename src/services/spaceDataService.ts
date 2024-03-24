@@ -6,7 +6,6 @@ import axios from "axios";
 
 export const getSpaceInformation = async () => {
   const rawSpaceData = await getSpaceAggregatedData();
-  console.log(rawSpaceData);
   const spaceDataWithWeather = await Promise.all(
     rawSpaceData.map(async (spaceData) => {
       try {
@@ -14,7 +13,6 @@ export const getSpaceInformation = async () => {
           spaceData.latitude,
           spaceData.longitude
         );
-        console.log(weatherData.data);
         const spaceDataWithWeatherData = {
           ...spaceData,
           weather: weatherData.data,
@@ -34,9 +32,10 @@ export const getSpaceAggregatedData = async () => {
   let spaceData = await spaceDataRepository.getRecentSpaceUpdatesfromAll();
 
   if (!spaceData) {
-    const spaceDataList = await fetchSpaceData();
-    await setSpaceData(spaceDataList);
-    spaceData = await spaceDataRepository.getRecentTotalSpaceData();
+    // No data found in the repository, fetch from external API and save to database
+    const spaceDataList = await fetchSpaceData(); // Fetch data from external API
+    await setSpaceData(spaceDataList); // Save fetched data to database
+    spaceData = await spaceDataRepository.getRecentTotalSpaceData(); // Retrieve saved data from database
   }
 
   return spaceData;
@@ -82,7 +81,11 @@ export const fetchSpaceData = async () => {
 };
 
 export const setSpaceData = async (spaceData: any) => {
-  if (spaceData !== undefined && Array.isArray(spaceData.data) && spaceData.data.length > 0) {
+  if (
+    spaceData !== undefined &&
+    Array.isArray(spaceData.data) &&
+    spaceData.data.length > 0
+  ) {
     const spaceDataList = spaceData.data as ISpaceData[];
 
     spaceDataList.forEach(async (spaceData) => {

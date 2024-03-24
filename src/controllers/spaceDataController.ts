@@ -22,7 +22,7 @@ export const getSpaceInformation = async (
   next: NextFunction
 ) => {
   const spaceData = await spaceDataService.getSpaceInformation();
-  return res.status(200).send(spaceData);
+  return res.status(200).json(spaceData);
 };
 
 // POST METHODS
