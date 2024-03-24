@@ -39,10 +39,10 @@ export const getRecentTotalSpaceData = async () => {
     { $limit: 1 },
     {
       $lookup: {
-        from: "spaces", // The collection to join with
-        localField: "stationCode", // The field from the "spaceData" collection
-        foreignField: "_id", // The field from the "space" collection
-        as: "spaceInfo", // The field to add the joined data to
+        from: "spaces",
+        localField: "stationCode",
+        foreignField: "_id",
+        as: "spaceInfo",
       },
     },
     {
@@ -50,13 +50,9 @@ export const getRecentTotalSpaceData = async () => {
     },
     {
       $project: {
-        // Define the fields you want to include in the final output
         stationCode: "$stationCode",
-        // Include other fields from the "spaceData" collection as needed
         dataItemMap: "$dataItemMap",
-        // Include fields from the "space" collection as needed
         spaceInfo: "$spaceInfo",
-        // Include other fields from the "space" collection as needed
       },
     },
   ])
@@ -70,7 +66,6 @@ export const getRecentSpaceUpdatesfromAll = async () => {
   const hourAgo = new Date(Date.now() - 60 * 60 * 1000);
   const spaceData = await spaceModel.aggregate([
     {
-      
       $lookup: {
         from: "spacedatas",
         localField: "_id",
@@ -93,6 +88,12 @@ export const getRecentSpaceUpdatesfromAll = async () => {
         dataItemMap: "$spaceData.dataItemMap",
         createdAt: "$spaceData.createdAt",
       },
+    },
+    {
+      $sort: { createdAt: -1 }, // Sort by createdAt field in descending order
+    },
+    {
+      $limit: 1,
     },
   ]);
 
