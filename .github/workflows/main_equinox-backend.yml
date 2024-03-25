@@ -61,6 +61,10 @@ jobs:
           echo FUSIONSOLAR_API_SYSTEMCODE= ${{secrets.FUSIONSOLAR_API_SYSTEMCODE}} >> .env
           echo OPENWEATHER_ONECALL_URL= ${{secrets.OPENWEATHER_ONECALL_URL}} >> .env
           echo OPENWEATHER_API_KEY= ${{secrets.OPENWEATHER_API_KEY}} >> .env
+          echo GOOGLE_CLIENT_EMAIL= ${{secrets.GOOGLE_CLIENT_EMAIL}} >> .env
+          echo GOOGLE_PRIVATE_KEY= ${{secrets.GOOGLE_PRIVATE_KEY}} >> .env
+          echo GOOGLE_PROJECT_ID= ${{secrets.GOOGLE_PROJECT_ID}} >> .env
+
           cat .env
 
       - name: "Deploy to Azure Web App"
