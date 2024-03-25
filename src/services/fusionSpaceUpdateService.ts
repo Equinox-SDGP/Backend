@@ -145,13 +145,15 @@ export const getYearSpaceUpdatesFromFusion = async (
       throw new Error(
         "Too many requests to Fusion Solar API. Please try again later."
       );
+
+    console.log(response.data);
     return response.data;
   } catch (error) {
     return error;
   }
 };
 
-export interface IFusionUpdateHourly {
+export interface IFusionUpdate {
   collectTime: number;
   stationCode: string;
   dataItemMap: {
@@ -161,4 +163,8 @@ export interface IFusionUpdateHourly {
     ongrid_power: number | null;
     inverter_power: number | null;
   };
+}
+
+export interface IFusionUpdateDataArray {
+  data: IFusionUpdate[] | null;
 }

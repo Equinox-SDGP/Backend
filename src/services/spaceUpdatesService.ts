@@ -1,10 +1,11 @@
-const moment = require("moment");
+import { timeIntervalMapper, timeDuration, getIntervalMilliseconds } from "./util/timeUtil";
 
 import { IUpdateSpace } from "../repository/models/spaceUpdatesModel";
 import * as spaceUpdatesRepository from "../repository/spaceUpdateRepository";
 import { UPDATE_INTERVAL } from "../repository/models/spaceUpdatesModel";
 import {
-  IFusionUpdateHourly,
+  IFusionUpdate,
+  IFusionUpdateDataArray,
   getHourSpaceUpdatesFromFusion,
   getDaySpaceUpdatesFromFusion,
   getMonthSpaceUpdatesFromFusion,
@@ -24,7 +25,7 @@ export const getSpaceUpdatesGraph = async (
   collectTime: number,
   timeInterval: string
 ) => {
-  const updatesFromDatabase = await saveSpaceUpdates(
+  const updatesFromDatabase: IUpdateSpace[] = await saveSpaceUpdates(
     spaceId,
     collectTime,
     timeInterval
@@ -84,12 +85,50 @@ export const saveSpaceUpdates = async (
   spaceId: string,
   collectTime: number,
   timeInterval: string
-) => {
-  // Start and end of day
-  const [startTime, endTime] = await timeDuration(collectTime, timeInterval);
+): Promise<IUpdateSpace[]> => {
+  try {
+    const [startTime, endTime] = timeDuration(collectTime, timeInterval);
+    const updatesFromDatabase = await getSpaceUpdatesFromDatabase(
+      spaceId,
+      startTime,
+      endTime,
+      timeInterval
+    );
+    const lastUpdatedTime = calculateLastUpdatedTime(
+      updatesFromDatabase,
+      startTime
+    );
 
-  // Get space updates from the database
-  const updatesFromDatabase = await spaceUpdatesRepository.getSpaceUpdates(
+    if (!shouldFetchFromFusion(lastUpdatedTime, collectTime, timeInterval)) {
+      return updatesFromDatabase;
+    }
+
+    const updatesFromFusion = await fetchUpdatesFromFusion(
+      spaceId,
+      lastUpdatedTime,
+      timeInterval
+    );
+    const updatesToSaveArray = prepareUpdatesToSave(
+      updatesFromFusion,
+      lastUpdatedTime,
+      timeInterval
+    );
+    await saveUpdatesToDatabase(updatesToSaveArray);
+
+    return updatesToSaveArray;
+  } catch (error) {
+    console.error("Error fetching space updates from Fusion Solar API:", error);
+    throw new Error("Error fetching space updates from Fusion Solar API");
+  }
+};
+
+const getSpaceUpdatesFromDatabase = async (
+  spaceId: string,
+  startTime: number,
+  endTime: number,
+  timeInterval: string
+) => {
+  return await spaceUpdatesRepository.getSpaceUpdates(
     spaceId,
     startTime,
     endTime,
@@ -176,58 +215,71 @@ export const saveSpaceUpdates = async (
   return spaceUpdatesFromDB;
 };
 
-/**  HELPER FUNCTIONS */
+const calculateLastUpdatedTime = (
+  updatesFromDatabase: IUpdateSpace[],
+  startTime: number
+) => {
+  return updatesFromDatabase.reduce(
+    (acc, curr) => Math.max(acc, curr.collectTime),
+    startTime
+  );
+};
 
-/** This function maps the time interval to the corresponding time unit
- * @param timeInterval
- * @returns
- */
-const timeIntervalMapper = (timeInterval: string) => {
+const shouldFetchFromFusion = (
+  lastUpdatedTime: number,
+  collectTime: number,
+  timeInterval: string
+) => {
+  const intervalMilliseconds = getIntervalMilliseconds(timeInterval);
+  return collectTime - lastUpdatedTime >= intervalMilliseconds;
+};
+
+const fetchUpdatesFromFusion = async (
+  spaceId: string,
+  lastUpdatedTime: number,
+  timeInterval: string
+) => {
   switch (timeInterval) {
     case UPDATE_INTERVAL.DAY:
-      return "hour";
+      return await getHourSpaceUpdatesFromFusion(spaceId, lastUpdatedTime);
     case UPDATE_INTERVAL.WEEK:
-      return "day";
+      return await getDaySpaceUpdatesFromFusion(spaceId, lastUpdatedTime);
     case UPDATE_INTERVAL.MONTH:
-      return "day";
+      return await getMonthSpaceUpdatesFromFusion(spaceId, lastUpdatedTime);
     case UPDATE_INTERVAL.YEAR:
-      return "month";
+      return await getYearSpaceUpdatesFromFusion(spaceId, lastUpdatedTime);
     default:
       throw new Error("Invalid time interval");
   }
 };
 
-/** This function returns the start and end time of a given time interval
- * @param timeStampUnix
- * @param timeInterval
- * @returns [startTime, endTime]
- */
-const timeDuration = async (
-  timeStampUnix: number,
+const prepareUpdatesToSave = async (
+  updatesFromFusion: IFusionUpdateDataArray,
+  lastUpdatedTime: number,
   timeInterval: string
-): Promise<[startTime: number, endTime: number]> => {
-  let startTime: number;
-  let endTime: number;
-
-  switch (timeInterval) {
-    case UPDATE_INTERVAL.DAY:
-      startTime = moment(timeStampUnix).startOf("day").valueOf();
-      endTime = moment(timeStampUnix).endOf("day").valueOf();
-      break;
-    case UPDATE_INTERVAL.WEEK:
-      startTime = moment(timeStampUnix).startOf("week").valueOf();
-      endTime = moment(timeStampUnix).endOf("week").valueOf();
-      break;
-    case UPDATE_INTERVAL.MONTH:
-      startTime = moment(timeStampUnix).startOf("month").valueOf();
-      endTime = moment(timeStampUnix).endOf("month").valueOf();
-      break;
-    case UPDATE_INTERVAL.YEAR:
-      startTime = moment(timeStampUnix).startOf("year").valueOf();
-      endTime = moment(timeStampUnix).endOf("year").valueOf();
-      break;
-    default:
-      throw new Error("Invalid time interval");
+) => {
+  if (!Array.isArray(updatesFromFusion.data)) {
+    throw new Error("Invalid data format from Fusion Solar API");
   }
-  return [startTime, endTime];
+
+  const updateInterval = await timeIntervalMapper(timeInterval);
+
+  return updatesFromFusion.data
+    .filter((element) => element.collectTime > lastUpdatedTime)
+    .map((element) => ({
+      dataItemMap: {
+        radiation_intensity: element.dataItemMap.radiation_intensity,
+        theory_power: element.dataItemMap.theory_power,
+        inverter_power: element.dataItemMap.inverter_power,
+        ongrid_power: element.dataItemMap.ongrid_power,
+        power_profit: element.dataItemMap.power_profit,
+      },
+      stationCode: element.stationCode,
+      collectTime: element.collectTime,
+      updateInterval: updateInterval,
+    }));
+};
+
+const saveUpdatesToDatabase = async (updatesToSaveArray: any[]) => {
+  await spaceUpdatesRepository.addSpaceUpdates(updatesToSaveArray);
 };

@@ -1,9 +1,8 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export enum UPDATE_INTERVAL {
-  HOUR = "hour",
   DAY = "day",
-  WEEK =  "week",
+  WEEK = "week",
   MONTH = "month",
   YEAR = "year",
 }
@@ -20,7 +19,7 @@ export interface IUpdateSpace extends Document {
   updateInterval: UPDATE_INTERVAL;
 }
 
-const hourlyUpdateSchema: Schema<IUpdateSpace> = new Schema({
+const spaceUpdateSchema: Schema<IUpdateSpace> = new Schema({
   dataItemMap: {
     radiation_intensity: {
       type: String,
@@ -59,7 +58,7 @@ const hourlyUpdateSchema: Schema<IUpdateSpace> = new Schema({
 
 const UpdateSpace = mongoose.model<IUpdateSpace>(
   "SpaceUpdate",
-  hourlyUpdateSchema
+  spaceUpdateSchema
 );
 
 export default UpdateSpace;
