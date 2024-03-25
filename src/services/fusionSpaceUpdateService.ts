@@ -141,12 +141,12 @@ export const getYearSpaceUpdatesFromFusion = async (
         },
       }
     );
+    console.log(response)
     if (response.data.failCode === 407)
       throw new Error(
         "Too many requests to Fusion Solar API. Please try again later."
       );
 
-    console.log(response.data);
     return response.data;
   } catch (error) {
     return error;

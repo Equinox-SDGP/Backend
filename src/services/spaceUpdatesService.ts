@@ -1,10 +1,15 @@
-import { timeIntervalMapper, timeDuration, getIntervalMilliseconds } from "./util/timeUtil";
-
-import { IUpdateSpace } from "../repository/models/spaceUpdatesModel";
-import * as spaceUpdatesRepository from "../repository/spaceUpdateRepository";
-import { UPDATE_INTERVAL } from "../repository/models/spaceUpdatesModel";
+import { timeIntervalMapper, timeDuration } from "./util/timeUtil";
 import {
-  IFusionUpdate,
+  calculateLastUpdatedTime,
+  shouldFetchFromFusion,
+} from "./util/spaceUpdatesUtil";
+
+import {
+  IUpdateSpace,
+  UPDATE_INTERVAL,
+} from "../repository/models/spaceUpdatesModel";
+import * as spaceUpdatesRepository from "../repository/spaceUpdateRepository";
+import {
   IFusionUpdateDataArray,
   getHourSpaceUpdatesFromFusion,
   getDaySpaceUpdatesFromFusion,
@@ -20,12 +25,23 @@ import {
 } from "./spaceGraphService";
 
 /** READ FUNCTIONS */
+
+/** This function fetches space updates
+ *
+ *  - It fetches the updates from the database
+ *  - then returns the updates
+ *
+ * @param spaceId
+ * @param collectTime
+ * @param timeInterval
+ * @returns
+ */
 export const getSpaceUpdatesGraph = async (
   spaceId: string,
   collectTime: number,
   timeInterval: string
 ) => {
-  const updatesFromDatabase: IUpdateSpace[] = await saveSpaceUpdates(
+  const updatesFromDatabase = await getSpaceUpdates(
     spaceId,
     collectTime,
     timeInterval
@@ -34,26 +50,24 @@ export const getSpaceUpdatesGraph = async (
   if (timeInterval === UPDATE_INTERVAL.DAY) {
     return await convertToGraphDataDay(updatesFromDatabase);
   } else if (timeInterval === UPDATE_INTERVAL.WEEK) {
-    const dailyUpdate = await getDaySpaceUpdatesFromFusion(
-      spaceId,
-      collectTime
-    );
     return await convertToGraphDataWeek(updatesFromDatabase);
   } else if (timeInterval === UPDATE_INTERVAL.MONTH) {
-    const dailyUpdate = await getDaySpaceUpdatesFromFusion(
-      spaceId,
-      collectTime
-    );
     return await convertToGraphDataMonth(updatesFromDatabase);
   } else if (timeInterval === UPDATE_INTERVAL.YEAR) {
-    const monthlyUpdate = await getMonthSpaceUpdatesFromFusion(
-      spaceId,
-      collectTime
-    );
     return await convertToGraphDataYear(updatesFromDatabase);
   }
 };
 
+/** This function fetches space updates
+ *
+ *  - It fetches the updates from the database
+ *  - then returns the updates
+ *
+ * @param spaceId
+ * @param collectTime
+ * @param timeInterval
+ * @returns
+ */
 export const getSpaceUpdates = async (
   spaceId: string,
   collectTime: number,
@@ -69,6 +83,8 @@ export const getSpaceUpdates = async (
 
   return updatesFromDatabase;
 };
+
+/** CREATE FUNCTIONS */
 
 /** This function fetches space updates
  *
@@ -88,10 +104,9 @@ export const saveSpaceUpdates = async (
 ): Promise<IUpdateSpace[]> => {
   try {
     const [startTime, endTime] = timeDuration(collectTime, timeInterval);
-    const updatesFromDatabase = await getSpaceUpdatesFromDatabase(
+    const updatesFromDatabase = await getSpaceUpdates(
       spaceId,
-      startTime,
-      endTime,
+      collectTime,
       timeInterval
     );
     const lastUpdatedTime = calculateLastUpdatedTime(
@@ -108,132 +123,31 @@ export const saveSpaceUpdates = async (
       lastUpdatedTime,
       timeInterval
     );
-    const updatesToSaveArray = prepareUpdatesToSave(
+    console.log(updatesFromFusion);
+    const updatesToSaveArray = await prepareUpdatesToSave(
       updatesFromFusion,
       lastUpdatedTime,
       timeInterval
     );
     await saveUpdatesToDatabase(updatesToSaveArray);
 
-    return updatesToSaveArray;
+    return await getSpaceUpdates(spaceId, collectTime, timeInterval);
   } catch (error) {
     console.error("Error fetching space updates from Fusion Solar API:", error);
     throw new Error("Error fetching space updates from Fusion Solar API");
   }
 };
 
-const getSpaceUpdatesFromDatabase = async (
-  spaceId: string,
-  startTime: number,
-  endTime: number,
-  timeInterval: string
-) => {
-  return await spaceUpdatesRepository.getSpaceUpdates(
-    spaceId,
-    startTime,
-    endTime,
-    await timeIntervalMapper(timeInterval)
-  );
-  console.log(updatesFromDatabase);
-
-  // Determine the fetch time based on the latest collect time from the database
-  let fetchTime = startTime;
-  updatesFromDatabase.forEach((element: IUpdateSpace) => {
-    fetchTime = Math.max(fetchTime, element.collectTime);
-  });
-
-  // Fetch updates from the Fusion Solar API based on the specified time interval
-  let updatesFromFusion = [] as any;
-  try {
-    switch (timeInterval) {
-      case UPDATE_INTERVAL.DAY:
-        updatesFromFusion = await getHourSpaceUpdatesFromFusion(
-          spaceId,
-          fetchTime
-        );
-        break;
-      case UPDATE_INTERVAL.WEEK:
-        updatesFromFusion = await getDaySpaceUpdatesFromFusion(
-          spaceId,
-          fetchTime
-        );
-        break;
-      case UPDATE_INTERVAL.MONTH:
-        updatesFromFusion = await getMonthSpaceUpdatesFromFusion(
-          spaceId,
-          fetchTime
-        );
-        break;
-      case UPDATE_INTERVAL.YEAR:
-        updatesFromFusion = await getYearSpaceUpdatesFromFusion(
-          spaceId,
-          fetchTime
-        );
-        break;
-      default:
-        throw new Error("Invalid time interval");
-    }
-  } catch (error) {
-    console.error("Error fetching space updates from Fusion Solar API:", error);
-    throw new Error("Error fetching space updates from Fusion Solar API");
-  }
-
-  // If no updates are found in the database, return the updates from Fusion Solar API
-  if (updatesFromFusion === undefined) return updatesFromDatabase;
-
-  if (Array.isArray(updatesFromFusion.data)) {
-    const updatesToSaveArray: IUpdateSpace[] = await Promise.all(
-      updatesFromFusion.data
-        .filter(
-          (element: IFusionUpdateHourly) => element.collectTime > fetchTime
-        )
-        .map((element: IFusionUpdateHourly) => ({
-          dataItemMap: {
-            radiation_intensity: element.dataItemMap.radiation_intensity,
-            theory_power: element.dataItemMap.theory_power,
-            inverter_power: element.dataItemMap.inverter_power,
-            ongrid_power: element.dataItemMap.ongrid_power,
-            power_profit: element.dataItemMap.power_profit,
-          },
-          stationCode: element.stationCode,
-          collectTime: element.collectTime,
-          updateInterval: timeIntervalMapper(timeInterval),
-        }))
-    );
-    await spaceUpdatesRepository.addSpaceUpdates(updatesToSaveArray);
-  }
-
-  // Return the updated space updates from the database
-  const spaceUpdatesFromDB: IUpdateSpace[] =
-    await spaceUpdatesRepository.getSpaceUpdates(
-      spaceId,
-      startTime,
-      endTime,
-      await timeIntervalMapper(timeInterval)
-    );
-
-  return spaceUpdatesFromDB;
-};
-
-const calculateLastUpdatedTime = (
-  updatesFromDatabase: IUpdateSpace[],
-  startTime: number
-) => {
-  return updatesFromDatabase.reduce(
-    (acc, curr) => Math.max(acc, curr.collectTime),
-    startTime
-  );
-};
-
-const shouldFetchFromFusion = (
-  lastUpdatedTime: number,
-  collectTime: number,
-  timeInterval: string
-) => {
-  const intervalMilliseconds = getIntervalMilliseconds(timeInterval);
-  return collectTime - lastUpdatedTime >= intervalMilliseconds;
-};
-
+/** This function fetches space updates from the Fusion Solar API
+ *
+ *  - It fetches updates based on the time interval
+ *  - then returns the updates
+ *
+ * @param spaceId
+ * @param lastUpdatedTime
+ * @param timeInterval
+ * @returns
+ */
 const fetchUpdatesFromFusion = async (
   spaceId: string,
   lastUpdatedTime: number,
@@ -245,14 +159,26 @@ const fetchUpdatesFromFusion = async (
     case UPDATE_INTERVAL.WEEK:
       return await getDaySpaceUpdatesFromFusion(spaceId, lastUpdatedTime);
     case UPDATE_INTERVAL.MONTH:
-      return await getMonthSpaceUpdatesFromFusion(spaceId, lastUpdatedTime);
+      return await getDaySpaceUpdatesFromFusion(spaceId, lastUpdatedTime);
     case UPDATE_INTERVAL.YEAR:
-      return await getYearSpaceUpdatesFromFusion(spaceId, lastUpdatedTime);
+      console.log("Request travelled here");
+      return await getMonthSpaceUpdatesFromFusion(spaceId, lastUpdatedTime);
     default:
       throw new Error("Invalid time interval");
   }
 };
 
+/** This function prepares updates to save
+ *
+ *  - It filters the updates from the Fusion Solar API based on the last updated time
+ *  - then maps the updates to the database schema
+ *  - then returns the updates
+ *
+ * @param updatesFromFusion
+ * @param lastUpdatedTime
+ * @param timeInterval
+ * @returns
+ */
 const prepareUpdatesToSave = async (
   updatesFromFusion: IFusionUpdateDataArray,
   lastUpdatedTime: number,
@@ -280,6 +206,10 @@ const prepareUpdatesToSave = async (
     }));
 };
 
+/** This function saves updates to the database
+ *  - It saves the updates to the database
+ * @param updatesToSaveArray
+ */
 const saveUpdatesToDatabase = async (updatesToSaveArray: any[]) => {
   await spaceUpdatesRepository.addSpaceUpdates(updatesToSaveArray);
 };

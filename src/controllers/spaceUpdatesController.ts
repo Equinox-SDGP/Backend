@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import * as spaceUpdatesService from "../services/spaceUpdatesService";
 import * as spaceService from "../services/spaceService";
+import moment from "moment";
 
 export const getSpaceUpdates = async (req: Request, res: Response) => {
   const spaceId = req.params.id;
@@ -61,10 +62,9 @@ export const hourlySpaceUpdates = async () => {
     const spaceList = await spaceService.getSpacesIdList();
 
     spaceList.forEach(async (spaceId) => {
-      const collectTime = new Date().getTime();
-      await spaceUpdatesService.saveSpaceUpdates(spaceId, collectTime, "day");
+      const currentTime = moment().valueOf();
+      await spaceUpdatesService.saveSpaceUpdates(spaceId, currentTime, "day");
     });
-    console.log("Updated hourly space data");
   } catch (error) {
     console.log(error);
   }
