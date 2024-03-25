@@ -33,22 +33,10 @@ export const getSpaceUpdatesGraph = async (
   if (timeInterval === UPDATE_INTERVAL.DAY) {
     return await convertToGraphDataDay(updatesFromDatabase);
   } else if (timeInterval === UPDATE_INTERVAL.WEEK) {
-    const dailyUpdate = await getDaySpaceUpdatesFromFusion(
-      spaceId,
-      collectTime
-    );
     return await convertToGraphDataWeek(updatesFromDatabase);
   } else if (timeInterval === UPDATE_INTERVAL.MONTH) {
-    const dailyUpdate = await getDaySpaceUpdatesFromFusion(
-      spaceId,
-      collectTime
-    );
     return await convertToGraphDataMonth(updatesFromDatabase);
   } else if (timeInterval === UPDATE_INTERVAL.YEAR) {
-    const monthlyUpdate = await getMonthSpaceUpdatesFromFusion(
-      spaceId,
-      collectTime
-    );
     return await convertToGraphDataYear(updatesFromDatabase);
   }
 };
@@ -98,9 +86,9 @@ export const saveSpaceUpdates = async (
   console.log(updatesFromDatabase);
 
   // Determine the fetch time based on the latest collect time from the database
-  let fetchTime = startTime;
+  let lastUpdatedTime = startTime;
   updatesFromDatabase.forEach((element: IUpdateSpace) => {
-    fetchTime = Math.max(fetchTime, element.collectTime);
+    lastUpdatedTime = Math.max(lastUpdatedTime, element.collectTime);
   });
 
   // Fetch updates from the Fusion Solar API based on the specified time interval
@@ -108,27 +96,38 @@ export const saveSpaceUpdates = async (
   try {
     switch (timeInterval) {
       case UPDATE_INTERVAL.DAY:
+        if (collectTime - lastUpdatedTime < 60 * 60 * 1000)
+          return updatesFromDatabase;
         updatesFromFusion = await getHourSpaceUpdatesFromFusion(
           spaceId,
-          fetchTime
+          lastUpdatedTime
         );
         break;
       case UPDATE_INTERVAL.WEEK:
+        if (collectTime - lastUpdatedTime < 24 * 60 * 60 * 1000)
+          return updatesFromDatabase;
+
         updatesFromFusion = await getDaySpaceUpdatesFromFusion(
           spaceId,
-          fetchTime
+          lastUpdatedTime
         );
         break;
       case UPDATE_INTERVAL.MONTH:
+        if (collectTime - lastUpdatedTime < 24 * 60 * 60 * 1000)
+          return updatesFromDatabase;
+
         updatesFromFusion = await getMonthSpaceUpdatesFromFusion(
           spaceId,
-          fetchTime
+          lastUpdatedTime
         );
         break;
       case UPDATE_INTERVAL.YEAR:
+        if (collectTime - lastUpdatedTime < 12 * 24 * 60 * 60 * 1000)
+          return updatesFromDatabase;
+
         updatesFromFusion = await getYearSpaceUpdatesFromFusion(
           spaceId,
-          fetchTime
+          lastUpdatedTime
         );
         break;
       default:
@@ -146,7 +145,7 @@ export const saveSpaceUpdates = async (
     const updatesToSaveArray: IUpdateSpace[] = await Promise.all(
       updatesFromFusion.data
         .filter(
-          (element: IFusionUpdateHourly) => element.collectTime > fetchTime
+          (element: IFusionUpdateHourly) => element.collectTime > lastUpdatedTime
         )
         .map((element: IFusionUpdateHourly) => ({
           dataItemMap: {
