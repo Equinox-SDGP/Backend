@@ -67,7 +67,6 @@ export const hourlySpaceUpdates = async () => {
       const currentTime = moment().valueOf();
       await spaceUpdatesService.saveSpaceUpdates(spaceId, currentTime, "day");
     });
-
     console.log("Updated hourly space data");
   } catch (error) {
     console.log(error);
