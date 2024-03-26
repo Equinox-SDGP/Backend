@@ -24,6 +24,5 @@ export const getSpaceUpdates = async (
   })
     .sort()
     .exec();
-
   return spaceUpdates;
 };

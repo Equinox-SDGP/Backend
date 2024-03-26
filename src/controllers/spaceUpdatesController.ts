@@ -1,7 +1,7 @@
+import moment from "moment";
 import { Request, Response, NextFunction } from "express";
 import * as spaceUpdatesService from "../services/spaceUpdatesService";
 import * as spaceService from "../services/spaceService";
-import moment from "moment";
 
 export const getSpaceUpdates = async (req: Request, res: Response) => {
   const spaceId = req.params.id;
@@ -16,7 +16,9 @@ export const getSpaceUpdates = async (req: Request, res: Response) => {
     );
     return res.status(200).json(spaceData);
   } catch (error) {
-    console.error(error);
+    if (error instanceof Error && error.message === "Invalid time interval") {
+      return res.status(400).json({ error: "Invalid time interval" });
+    }
     return res.status(500).json({ message: "Error fetching space data" });
   }
 };
@@ -65,6 +67,7 @@ export const hourlySpaceUpdates = async () => {
       const currentTime = moment().valueOf();
       await spaceUpdatesService.saveSpaceUpdates(spaceId, currentTime, "day");
     });
+    console.log("Updated hourly space data");
   } catch (error) {
     console.log(error);
   }

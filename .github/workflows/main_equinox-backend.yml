@@ -1,12 +1,12 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - Equinox
+name: Build and deploy Node.js app to Azure Web App - equinox-backend
 
 on:
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -19,12 +19,12 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
-          node-version: '20.x'
-          
+          node-version: "20.x"
+
       - name: npm install, build, and test
         run: |
           npm install
-          npm run build
+          npm run build --if-present
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
@@ -39,9 +39,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: 'Production'
+      name: "Production"
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
@@ -61,13 +61,17 @@ jobs:
           echo FUSIONSOLAR_API_SYSTEMCODE= ${{secrets.FUSIONSOLAR_API_SYSTEMCODE}} >> .env
           echo OPENWEATHER_ONECALL_URL= ${{secrets.OPENWEATHER_ONECALL_URL}} >> .env
           echo OPENWEATHER_API_KEY= ${{secrets.OPENWEATHER_API_KEY}} >> .env
+          echo GOOGLE_CLIENT_EMAIL= ${{secrets.GOOGLE_CLIENT_EMAIL}} >> .env
+          echo GOOGLE_PRIVATE_KEY= ${{secrets.GOOGLE_PRIVATE_KEY}} >> .env
+          echo GOOGLE_PROJECT_ID= ${{secrets.GOOGLE_PROJECT_ID}} >> .env
+
           cat .env
-      
-      - name: 'Deploy to Azure Web App'
+
+      - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'Equinox'
-          slot-name: 'Production'
+          app-name: "equinox-backend"
+          slot-name: "Production"
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B5D0B10ECF7A49C080FCB11DDA8FC859 }}
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_7902E2487567477D80CAF58C370BA97E }}

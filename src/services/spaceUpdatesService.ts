@@ -117,7 +117,6 @@ export const saveSpaceUpdates = async (
     if (!shouldFetchFromFusion(lastUpdatedTime, collectTime, timeInterval)) {
       return updatesFromDatabase;
     }
-
     const updatesFromFusion = await fetchUpdatesFromFusion(
       spaceId,
       lastUpdatedTime,
