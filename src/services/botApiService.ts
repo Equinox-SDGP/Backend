@@ -41,7 +41,7 @@ export const getBotResponse = async (userMessage: string) => {
 
   for (const message of response.queryResult.responseMessages) {
     if (message.text) {
-      console.log(`Agent Response: ${message.text.text}`)
+      console.log(`Agent Response: ${message.text.text}`);
       return message.text.text;
     }
   }
