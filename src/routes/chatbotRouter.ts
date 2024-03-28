@@ -32,7 +32,6 @@ import chatbotController from "../controllers/chatController";
  *         '500':
  *           description: Server Error
  */
-
 router.post("/user-message", chatbotController.getBotResponse);
 
 module.exports = router;
