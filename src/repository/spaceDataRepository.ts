@@ -1,6 +1,5 @@
 import SpaceDataModel, { ISpaceData } from "./models/spaceDataModel";
 import spaceModel from "./models/spaceModel";
-import SpaceModel from "./models/spaceModel";
 
 /** CREATE */
 export const addSpaceData = async (spaceData: ISpaceData) => {
@@ -99,3 +98,7 @@ export const getRecentSpaceUpdatesfromAll = async () => {
 
   return spaceData;
 };
+
+/** UPDATE */
+
+/** DELETE */

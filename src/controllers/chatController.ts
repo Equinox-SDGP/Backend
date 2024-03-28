@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import * as botService from "../services/botApiService";
+import * as botApiService from "../services/botApiService";
 import databaseService from "../services/databaseService";
 
 class ChatController {
@@ -18,7 +18,7 @@ class ChatController {
     console.log(userMessage);
 
     // Send request to chatbot API to get bot response
-    const botResponse = await botService.getBotResponse(userMessage);
+    const botResponse = await botApiService.getBotResponse(userMessage);
 
     res.status(200).json({ botResponse });
   }
