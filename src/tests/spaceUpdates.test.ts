@@ -22,15 +22,32 @@ describe("POST /spaceUpdates/refresh", () => {
     });
 
     test("should save the space updates", async () => {
-      // Add your test logic to verify the space updates are saved
+      // test logic to verify the space updates are saved
+      const response = await supertest(app).post("/spaceUpdates/refresh").send({
+        stationCode: "NE=51002841",
+        collectTime: 1711019706612,
+        timeInterval: "day",
+      });
+      expect(response.status).toBe(201);
     });
 
     test("should respond with a json object containing the space data and a message", async () => {
-      // Add your test logic to verify the response body
+      // test logic to verify the response body
+      const response = await supertest(app).post("/spaceUpdates/refresh").send({
+        stationCode: "NE=51002841",
+        collectTime: 1711019706612,
+        timeInterval: "day",
+      });
+
+      expect(response.status).toBe(201);
+
+      expect(response.body).toHaveProperty("spaceData");
+      expect(response.body).toHaveProperty("message");
+  
     });
 
     test("should specify json in the content type header", async () => {
-      // Add your test logic to verify the content type header
+      // test logic to verify the content type header
     });
   });
 });
