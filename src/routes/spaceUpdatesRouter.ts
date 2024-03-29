@@ -3,7 +3,7 @@ const router = express.Router();
 
 import * as spaceUpdatesController from "../controllers/spaceUpdatesController";
 
-/** GET Method */
+/** GET Routes */
 /**
  * @swagger
  * /spaceUpdates/historical/graph/{spaceId}:
@@ -52,7 +52,7 @@ router.get(
   spaceUpdatesController.getSpaceUpdatesGraph
 );
 
-/** PUT Method */
+/** PUT Routes */
 /**
  * @swagger
  * /spaceUpdates/refresh:
@@ -85,7 +85,7 @@ router.get(
  *                   - week
  *                   - month
  *                   - year
- *    
+ *
  *     responses:
  *       201:
  *         description: Information received
@@ -97,5 +97,96 @@ router.get(
  *         description: Server Error
  */
 router.post("/refresh", spaceUpdatesController.saveSpaceUpdates);
+
+/** PUT Routes */
+
+/**
+ * @swagger
+ * /spaceUpdates/update:
+ *   put:
+ *     tags:
+ *       - Space Updates Controller
+ *     summary: Updating space updates
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - stationCode
+ *               - collectTime
+ *               - timeInterval
+ *               - dataItemMap
+ *             properties:
+ *               stationCode:
+ *                 type: string
+ *                 default: NE=51002841
+ *               collectTime:
+ *                 type: number
+ *                 default: 1711019706612
+ *               timeInterval:
+ *                 type: string
+ *                 default: day
+ *                 enum:
+ *                   - day
+ *                   - week
+ *                   - month
+ *                   - year
+ *               dataItemMap:
+ *                 type: object
+ *                 properties: {}
+ *     responses:
+ *       '200':
+ *         description: Space updates updated successfully
+ *       '400':
+ *         description: Invalid request body
+ */
+router.put("/update", spaceUpdatesController.updateSpaceUpdates);
+
+/** DELETE Routes */
+/**
+ * @swagger
+ * /spaceUpdates/deleteupdate:
+ *   delete:
+ *     tags:
+ *       - Space Updates Controller
+ *     summary: Delete space updates
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - stationCode
+ *               - collectTime
+ *               - timeInterval
+ *             properties:
+ *               stationCode:
+ *                 type: string
+ *                 default: NE=51002841
+ *               collectTime:
+ *                 type: number
+ *                 default: 1711019706612
+ *               timeInterval:
+ *                 type: string
+ *                 default: day
+ *                 enum:
+ *                   - day
+ *                   - week
+ *                   - month
+ *                   - year
+ *     responses:
+ *       '200':
+ *         description: Space updates deleted successfully
+ *       '400':
+ *         description: Invalid request body
+ *       '404':
+ *         description: Space updates not found
+ *       '500':
+ *         description: Server Error
+ */
+router.delete("/deleteupdate", spaceUpdatesController.deleteSpaceUpdates);
 
 module.exports = router;
