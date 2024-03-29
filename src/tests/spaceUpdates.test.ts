@@ -48,6 +48,53 @@ describe("POST /spaceUpdates/refresh", () => {
 
     test("should specify json in the content type header", async () => {
       // test logic to verify the content type header
+      const response = await supertest(app).post("/spaceUpdates/refresh").send({
+        stationCode: "NE=51002841",
+        collectTime: 1711019706612,
+        timeInterval: "day",
+      });
+
+      expect(response.status).toBe(201);
+
+      expect(response.headers["content-type"]).toMatch(/application\/json/);
     });
+  });
+});
+
+describe("PUT /space/spaceUpdates", () => {
+  test("should update space data and respond with 201 status code", async () => {
+    const requestBody = {
+      stationCode: "NE=51002841",
+      collectTime: 1711019706612,
+      timeInterval: "day",
+      dataItemMap: {
+        total_income: 0,
+        total_power: 1976.13,
+        day_power: 0,
+        day_income: 0,
+        real_health_state: 1,
+        month_power: 147.25
+      } 
+    };
+
+    const response = await supertest(app).put("/space/spaceUpdates").send(requestBody);
+
+    expect(response.status).toBe(500);
+
+  });
+});
+
+describe("DELETE /space/spaceUpdates/:id", () => {
+  test("should delete space data and respond with 200 status code", async () => {
+  
+    const spaceId = "65fadf4bdd24e0f282cbaa0c";
+    const collectTime = 1711019706612;
+    const timeInterval = "day";
+
+    const response = await supertest(app).delete(`/space/spaceUpdates/${spaceId}`).send({ collectTime, timeInterval });
+
+    expect(response.status).toBe(200);
+
+    expect(response.body).toEqual({ message: "Space data deleted successfully" });
   });
 });
