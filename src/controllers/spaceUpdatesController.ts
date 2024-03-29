@@ -3,6 +3,9 @@ import { Request, Response, NextFunction } from "express";
 import * as spaceUpdatesService from "../services/spaceUpdatesService";
 import * as spaceService from "../services/spaceService";
 
+// GET Controllers
+
+// GET /space/spaceUpdates/:id
 export const getSpaceUpdates = async (req: Request, res: Response) => {
   const spaceId = req.params.id;
   const collectTime = req.body.collectTime;
@@ -23,6 +26,7 @@ export const getSpaceUpdates = async (req: Request, res: Response) => {
   }
 };
 
+// GET /space/spaceUpdates/graph/:spaceId
 export const getSpaceUpdatesGraph = async (req: Request, res: Response) => {
   const spaceId = req.params.spaceId as string;
   const collectTime = Number(req.query.collectTime as string);
@@ -41,6 +45,9 @@ export const getSpaceUpdatesGraph = async (req: Request, res: Response) => {
   }
 };
 
+// POST Controllers
+
+// POST /space/spaceUpdates
 export const saveSpaceUpdates = async (req: Request, res: Response) => {
   const spaceId = req.body.stationCode;
   const collectTime = req.body.collectTime;
@@ -59,6 +66,49 @@ export const saveSpaceUpdates = async (req: Request, res: Response) => {
   }
 };
 
+// PUT Controllers
+
+// PUT /space/spaceUpdates
+export const updateSpaceUpdates = async (req: Request, res: Response) => {
+  const spaceId = req.body.stationCode;
+  const collectTime = req.body.collectTime;
+  const timeInterval = req.body.timeInterval;
+  const dataItemMap = req.body.dataItemMap;
+
+  try {
+    const spaceData = await spaceUpdatesService.updateSpaceUpdates(
+      spaceId,
+      collectTime,
+      timeInterval,
+      dataItemMap
+    );
+    return res.status(201).json(spaceData);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error updating space data" });
+  }
+};
+
+// DELETE Controllers
+export const deleteSpaceUpdates = async (req: Request, res: Response) => {
+  const spaceId = req.params.id;
+  const collectTime = req.body.collectTime;
+  const timeInterval = req.body.timeInterval;
+
+  try {
+    await spaceUpdatesService.deleteSpaceUpdates(
+      spaceId,
+      collectTime,
+      timeInterval
+    );
+    return res.status(200).json({ message: "Space data deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error deleting space data" });
+  }
+};
+
+// Hourly space updates
 export const hourlySpaceUpdates = async () => {
   try {
     const spaceList = await spaceService.getSpacesIdList();
