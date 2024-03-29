@@ -5,6 +5,7 @@ import {
 } from "./util/spaceUpdatesUtil";
 
 import {
+  IDataItemMap,
   IUpdateSpace,
   UPDATE_INTERVAL,
 } from "../repository/models/spaceUpdatesModel";
@@ -211,4 +212,49 @@ const prepareUpdatesToSave = async (
  */
 const saveUpdatesToDatabase = async (updatesToSaveArray: any[]) => {
   await spaceUpdatesRepository.addSpaceUpdates(updatesToSaveArray);
+};
+
+/** UPDATE FUNCTIONS */
+
+export const updateSpaceUpdates = async (
+  spaceId: string,
+  collectTime: number,
+  timeInterval: string,
+  dataItemMap: IDataItemMap
+) => {
+  const spaceUpateGiven = {
+    stationCode: spaceId,
+    collectTime: collectTime,
+    updateInterval: timeInterval,
+    dataItemMap: dataItemMap,
+  } as IUpdateSpace;
+  try {
+    const updatedSpaceUpdate = await spaceUpdatesRepository.updateSpaceUpdate(
+      spaceUpateGiven
+    );
+    return updatedSpaceUpdate;
+  } catch (error) {}
+};
+
+/** DELETE FUNCTION */
+export const deleteSpaceUpdates = async (
+  spaceId: string,
+  collectTime: number,
+  timeInterval: string
+) => {
+  try {
+    const spaceData = await spaceUpdatesRepository.getSpaceUpdate(
+      spaceId,
+      collectTime,
+      timeInterval
+    );
+
+    if (!spaceData) {
+      throw new Error("Space updates not found");
+    }
+    await spaceUpdatesRepository.deleteSpaceUpdateById(spaceData._id);
+  } catch (error) {
+    console.error("Error deleting space updates", error);
+    throw new Error("Error deleting space updates");
+  }
 };
