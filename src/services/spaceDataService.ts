@@ -1,5 +1,7 @@
+import moment from "moment";
 import { ISpaceData } from "../repository/models/spaceDataModel";
 import * as spaceDataRepository from "../repository/spaceDataRepository";
+import * as spacePredictionRepository from "../repository/spacePredictionRepository";
 import * as fusionSessionService from "./fusionSessionService";
 import * as spaceService from "./spaceService";
 import axios from "axios";
@@ -13,9 +15,23 @@ export const getSpaceInformation = async () => {
           spaceData.latitude,
           spaceData.longitude
         );
+
+        const irradianceData = await getDaysIrradiance(
+          spaceData.latitude,
+          spaceData.longitude
+        );
+        const currentDayIrradiance = getDayIrradiance(irradianceData);
+
+        const predictionData =
+          await spacePredictionRepository.getRecentPrediction(
+            spaceData.stationCode
+          );
+
         const spaceDataWithWeatherData = {
           ...spaceData,
-          weather: weatherData.data,
+          weather: weatherData,
+          irradiance: currentDayIrradiance,
+          prediction: predictionData?.prediction,
         };
         return spaceDataWithWeatherData;
       } catch (error) {
@@ -96,9 +112,72 @@ export const setSpaceData = async (spaceData: any) => {
   }
 };
 
-const getCurrentWeatherData = async (latitude: number, longitude: number) => {
+export const getCurrentWeatherData = async (latitude: number, longitude: number) => {
   const currentWeatherData = await axios.get(
     `${process.env.OPENWEATHER_ONECALL_URL}?lat=${latitude}&lon=${longitude}&appid=${process.env.OPENWEATHER_API_KEY}&units=metric&exclude=minutely,hourly,daily,alerts`
   );
-  return currentWeatherData;
+  return currentWeatherData.data;
+};
+
+export const getDaysIrradiance = async (latitude: number, longitude: number) => {
+  const currentDate = moment().format("YYYY-MM-DD");
+
+  try {
+    const daysIrradiance = await axios.get(
+      `${process.env.OPENWEATHER_IRRADIANCE_URL}`,
+      {
+        params: {
+          lat: latitude,
+          lon: longitude,
+          date: currentDate,
+          apikey: process.env.OPENWEATHER_API_KEY,
+        },
+      }
+    );
+    return daysIrradiance.data;
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
+};
+
+export const getCurrentHourIrradiance = (irradianceData: any) => {
+  const currentHour = moment().hour();
+  irradianceData["irradiance"]["hourly"].forEach((hour: any) => {
+    if (hour["hour"] === currentHour) {
+      const currentHourIrradiance = {
+        hour: hour["hour"],
+        value: hour["clear_sky"]["dni"],
+      };
+      console.log(currentHourIrradiance);
+
+      return currentHourIrradiance;
+    }
+  });
+};
+
+const getDayIrradiance = (irradianceData: any) => {
+  return irradianceData["irradiance"]["daily"][0];
+};
+
+const getSolarPrediction = async (
+  irradiance: number,
+  module_temperature: number,
+  real_ac_power: number
+) => {
+  const prediction = await axios.post(
+    `${process.env.ML_MODEL_URL}/predict`,
+    {
+      irradiation: irradiance,
+      module_temperature: module_temperature,
+      real_ac_power: real_ac_power,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  return prediction.data;
 };

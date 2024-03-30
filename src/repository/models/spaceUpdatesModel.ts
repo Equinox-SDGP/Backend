@@ -6,14 +6,15 @@ export enum UPDATE_INTERVAL {
   MONTH = "month",
   YEAR = "year",
 }
+export interface IDataItemMap {
+  radiation_intensity: string | null;
+  theory_power: number | null;
+  inverter_power: number | null;
+  ongrid_power: number | null;
+  power_profit: number | null;
+}
 export interface IUpdateSpace extends Document {
-  dataItemMap: {
-    radiation_intensity: string | null;
-    theory_power: number | null;
-    inverter_power: number | null;
-    ongrid_power: number | null;
-    power_profit: number | null;
-  };
+  dataItemMap: IDataItemMap;
   stationCode: string;
   collectTime: number;
   updateInterval: UPDATE_INTERVAL;

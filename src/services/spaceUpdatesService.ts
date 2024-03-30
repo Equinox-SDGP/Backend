@@ -4,11 +4,14 @@ import {
   shouldFetchFromFusion,
 } from "./util/spaceUpdatesUtil";
 
+import { getCurrentWeatherData, getCurrentHourIrradiance } from "./spaceDataService";
+
 import {
   IUpdateSpace,
   UPDATE_INTERVAL,
 } from "../repository/models/spaceUpdatesModel";
 import * as spaceUpdatesRepository from "../repository/spaceUpdateRepository";
+import * as spacePredictionRepository from "../repository/spacePredictionRepository";
 import {
   IFusionUpdateDataArray,
   getHourSpaceUpdatesFromFusion,
@@ -23,6 +26,7 @@ import {
   convertToGraphDataWeek,
   convertToGraphDataYear,
 } from "./spaceGraphService";
+import { get } from "axios";
 
 /** READ FUNCTIONS */
 
@@ -211,4 +215,97 @@ const prepareUpdatesToSave = async (
  */
 const saveUpdatesToDatabase = async (updatesToSaveArray: any[]) => {
   await spaceUpdatesRepository.addSpaceUpdates(updatesToSaveArray);
+<<<<<<< Updated upstream
 };
+=======
+};
+
+/** UPDATE FUNCTIONS */
+
+export const updateSpaceUpdates = async (
+  spaceId: string,
+  collectTime: number,
+  timeInterval: string,
+  dataItemMap: IDataItemMap
+) => {
+  const spaceUpateGiven = {
+    stationCode: spaceId,
+    collectTime: collectTime,
+    updateInterval: timeInterval,
+    dataItemMap: dataItemMap,
+  } as IUpdateSpace;
+  try {
+    const updatedSpaceUpdate = await spaceUpdatesRepository.updateSpaceUpdate(
+      spaceUpateGiven
+    );
+    return updatedSpaceUpdate;
+  } catch (error) {}
+};
+
+/** DELETE FUNCTION */
+export const deleteSpaceUpdates = async (
+  spaceId: string,
+  collectTime: number,
+  timeInterval: string
+) => {
+  try {
+    const spaceData = await spaceUpdatesRepository.getSpaceUpdate(
+      spaceId,
+      collectTime,
+      timeInterval
+    );
+
+    if (!spaceData) {
+      throw new Error("Space updates not found");
+    }
+    await spaceUpdatesRepository.deleteSpaceUpdateById(spaceData._id);
+  } catch (error) {
+    console.error("Error deleting space updates", error);
+    throw new Error("Error deleting space updates");
+  }
+};
+
+export const saveSpacePrediction = async (
+  spaceId: string,
+  currentTime: number
+) => {
+  try {
+    const spacePrediction = await spacePredictionRepository.getPrediction(
+      spaceId,
+      currentTime,
+      "hourly"
+    );
+
+    if (spacePrediction) {
+      throw new Error("Space prediction already exists");
+    }
+
+    const spacePredictionData = await fetchSpacePrediction(
+      spaceId,
+      currentTime
+    );
+    await spacePredictionRepository.addPrediction(spacePredictionData);
+  } catch (error) {
+    console.error("Error saving space prediction", error);
+    throw new Error("Error saving space prediction");
+  }
+};
+
+const fetchSpacePrediction = async (spaceId: string, currentTime: number) => {
+  const getSpaceData = await spaceUpdatesRepository.getSpaceUpdate(
+    spaceId,
+    currentTime,
+    "hour"
+  );
+  if (!getSpaceData) {
+    throw new Error("Space data not found");
+  }
+
+  const weatherData = await getCurrentWeatherData(
+    getSpaceData.latitude,
+    getSpaceData.longitude
+  );
+
+  return getSpaceData;
+};
+>>>>>>> Stashed changes

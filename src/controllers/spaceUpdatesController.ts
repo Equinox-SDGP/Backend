@@ -66,9 +66,27 @@ export const hourlySpaceUpdates = async () => {
     spaceList.forEach(async (spaceId) => {
       const currentTime = moment().valueOf();
       await spaceUpdatesService.saveSpaceUpdates(spaceId, currentTime, "day");
+      await spaceUpdatesService.saveSpacePrediction(spaceId, currentTime);
     });
     console.log("Updated hourly space data");
   } catch (error) {
     console.log(error);
   }
 };
+
+// Daily space updates
+export const dailySpaceUpdates = async () => {
+  try {
+    const spaceList = await spaceService.getSpacesIdList();
+
+    spaceList.forEach(async (spaceId) => {
+      const currentTime = moment().valueOf();
+      await spaceUpdatesService.saveSpaceUpdates(spaceId, currentTime, "month");
+    });
+    console.log("Updated daily space data");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
