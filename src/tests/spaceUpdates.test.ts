@@ -84,14 +84,14 @@ describe("PUT /space/spaceUpdates", () => {
   });
 });
 
-describe("DELETE /space/spaceUpdates/:id", () => {
+describe("DELETE /space/spaceUpdates", () => {
   test("should delete space data and respond with 200 status code", async () => {
   
     const spaceId = "65fadf4bdd24e0f282cbaa0c";
     const collectTime = 1711019706612;
     const timeInterval = "day";
 
-    const response = await supertest(app).delete(`/space/spaceUpdates/${spaceId}`).send({ collectTime, timeInterval });
+    const response = await supertest(app).delete(`/space/spaceUpdates`).send({ collectTime, timeInterval });
 
     expect(response.status).toBe(200);
 
