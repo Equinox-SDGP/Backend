@@ -23,7 +23,9 @@ export const convertToGraphDataDay = (spaceUpdates: IUpdateSpace[]) => {
   // Update hourData and calculate maxValue using spaceUpdates
   spaceUpdates.forEach((element: IUpdateSpace) => {
     const hourOfDay = moment(element.collectTime).hour();
-    hourData[hourOfDay].value = element.dataItemMap.inverter_power || 0;
+    hourData[hourOfDay].value = parseFloat(
+      (element.dataItemMap.inverter_power || 0).toFixed(1)
+    );
     // Update maxValue if needed
     maxValue = Math.max(maxValue, hourData[hourOfDay].value);
   });
@@ -31,7 +33,7 @@ export const convertToGraphDataDay = (spaceUpdates: IUpdateSpace[]) => {
   // Construct the graph data object
   const graphData = {
     day: { data: hourData },
-    maxValue: maxValue,
+    maxValue: maxValue * 1.25,
   };
 
   return graphData;
@@ -47,13 +49,15 @@ export const convertToGraphDataWeek = (spaceUpdates: IUpdateSpace[]) => {
   let maxValue = 0;
   spaceUpdates.forEach((element: IUpdateSpace) => {
     const dayOfWeek = moment(element.collectTime).day();
-    weekData[dayOfWeek].value += element.dataItemMap.inverter_power || 0;
+    weekData[dayOfWeek].value += parseFloat(
+      (element.dataItemMap.inverter_power || 0).toFixed(1)
+    );
     maxValue = Math.max(maxValue, weekData[dayOfWeek].value);
   });
 
   const graphData = {
     week: { data: weekData },
-    maxValue: maxValue,
+    maxValue: maxValue * 1.25,
   };
 
   return graphData;
@@ -62,6 +66,7 @@ export const convertToGraphDataWeek = (spaceUpdates: IUpdateSpace[]) => {
 export const convertToGraphDataMonth = (spaceUpdates: IUpdateSpace[]) => {
   const monthData = [] as any[];
   const numDaysInMonth = moment().daysInMonth();
+
   for (let day = 1; day <= numDaysInMonth; day++) {
     monthData.push({
       value: 0,
@@ -72,13 +77,15 @@ export const convertToGraphDataMonth = (spaceUpdates: IUpdateSpace[]) => {
   let maxValue = 0;
   spaceUpdates.forEach((element: IUpdateSpace) => {
     const dayOfMonth = moment(element.collectTime).date();
-    monthData[dayOfMonth - 1].value += element.dataItemMap.inverter_power || 0;
+    monthData[dayOfMonth - 1].value += parseFloat(
+      (element.dataItemMap.inverter_power || 0).toFixed(1)
+    );
     maxValue = Math.max(maxValue, monthData[dayOfMonth - 1].value);
   });
 
   const graphData = {
     month: { data: monthData },
-    maxValue: maxValue,
+    maxValue: maxValue * 1.25,
   };
 
   return graphData;
@@ -93,13 +100,15 @@ export const convertToGraphDataYear = (spaceUpdates: IUpdateSpace[]) => {
   let maxValue = 0;
   spaceUpdates.forEach((element: IUpdateSpace) => {
     const monthOfYear = moment(element.collectTime).month();
-    yearData[monthOfYear].value += element.dataItemMap.inverter_power || 0;
+    yearData[monthOfYear].value += parseFloat(
+      (element.dataItemMap.inverter_power || 0).toFixed(1)
+    );
     maxValue = Math.max(maxValue, yearData[monthOfYear].value);
   });
 
   const graphData = {
     year: { data: yearData },
-    maxValue: maxValue,
+    maxValue: maxValue * 1.25,
   };
 
   return graphData;

@@ -60,8 +60,8 @@ export const saveSpaceUpdates = async (req: Request, res: Response) => {
       timeInterval
     );
     return res.status(201).json(spaceData);
-  } catch (error) {
-    console.error(error);
+  } catch (error:any) {
+    console.error("Error saving space data: ", error);
     return res.status(500).json({ message: "Error saving space data" });
   }
 };
@@ -122,3 +122,32 @@ export const hourlySpaceUpdates = async () => {
     console.log(error);
   }
 };
+// Daily space updates
+export const dailySpaceUpdates = async () => {
+  try {
+    const spaceList = await spaceService.getSpacesIdList();
+
+    spaceList.forEach(async (spaceId) => {
+      const currentTime = moment().valueOf();
+      await spaceUpdatesService.saveSpaceUpdates(spaceId, currentTime, "month");
+    });
+    console.log("Updated daily space data");
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// Monthly space updates
+export const monthlySpaceUpdates = async () => {
+  try {
+    const spaceList = await spaceService.getSpacesIdList();
+
+    spaceList.forEach(async (spaceId) => {
+      const currentTime = moment().valueOf();
+      await spaceUpdatesService.saveSpaceUpdates(spaceId, currentTime, "year");
+    });
+    console.log("Updated monthly space data");
+  } catch (error) {
+    console.log(error);
+  }
+}

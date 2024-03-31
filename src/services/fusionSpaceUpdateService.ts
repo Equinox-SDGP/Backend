@@ -13,7 +13,7 @@ export const getHourSpaceUpdatesFromFusion = async (
   try {
     const xsrfToken = await fusionSessionService.getRecentFusionSession();
     const response = await axios.post(
-      `${process.env.FUSIONSOLAR_API_BASE_URL}/thirdData/getKpiStationHour`,
+      `${process.env.FUSIONSOLAR_API_BASE_URL}/getKpiStationDay`,
       {
         stationCodes: spaceId,
         collectTime: collectTime,
@@ -52,7 +52,7 @@ export const getDaySpaceUpdatesFromFusion = async (
   try {
     const xsrfToken = await fusionSessionService.getRecentFusionSession();
     const response = await axios.post(
-      `${process.env.FUSIONSOLAR_API_BASE_URL}/thirdData/getKpiStationDay`,
+      `${process.env.FUSIONSOLAR_API_BASE_URL}/getKpiStationDay`,
       {
         stationCodes: spaceId,
         collectTime: collectTime,
@@ -64,6 +64,7 @@ export const getDaySpaceUpdatesFromFusion = async (
         },
       }
     );
+    console.log(response)
 
     if (response.data.failCode === 407) {
       throw new Error(
@@ -91,7 +92,7 @@ export const getMonthSpaceUpdatesFromFusion = async (
   try {
     const xsrfToken = await fusionSessionService.getRecentFusionSession();
     const response = await axios.post(
-      `${process.env.FUSIONSOLAR_API_BASE_URL}/thirdData/getKpiStationMonth`,
+      `${process.env.FUSIONSOLAR_API_BASE_URL}/getKpiStationMonth`,
       {
         stationCodes: spaceId,
         collectTime: collectTime,
@@ -129,7 +130,7 @@ export const getYearSpaceUpdatesFromFusion = async (
 ) => {
   try {
     const response = await axios.post(
-      `${process.env.FUSIONSOLAR_API_BASE_URL}/thirdData/getKpiStationYear`,
+      `${process.env.FUSIONSOLAR_API_BASE_URL}/getKpiStationYear`,
       {
         stationCodes: spaceId,
         collectTime: collectTime,

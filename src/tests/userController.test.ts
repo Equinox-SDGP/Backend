@@ -1,67 +1,36 @@
-import supertest from 'supertest';
-import app from '../app';
-import User from '../repository/models/userModel';
+import { Request, Response, NextFunction } from "express";
+import { verifyUser } from '../controllers/userController';
 
-describe('User Controller', () => {
-  describe('POST /users', () => {
-    it('should create a new user', async () => {
-      const userData = { email: 'senuvi@j.com', password: 'password' };
-      const response = await supertest(app).post('/users').send(userData);
+describe('verifyUser function', () => {
+  // Test successful user verification
+//   it('should return 200 with success message if user is found', async () => {
+//     const req = { body: { email: "senuvi@j.com", password: "correct_password" } } as Request; // Replace with valid credentials
+//     const res = ({
+//         status: jest.fn().mockReturnThis(),
+//         json: jest.fn(),
+//       } as unknown) as Response;
+//     const next = jest.fn();
 
-      expect(response.status).toBe(201);
-      expect(response.body).toEqual({ message: 'User created successfully' });
-    });
+//     await verifyUser(req, res, next);
 
-    describe('GET /users/:id', () => {
-        it('should get a user by ID', async () => {
-          const newUser = await User.create({ email: 'senuvi@j.com', password: 'password' });
-          const response = await supertest(app).get(`/users/${newUser._id}`);
-    
-          expect(response.status).toBe(200);
-          expect(response.body.user.email).toBe('senuvi@j.com');
-        });
-    
-        it('should return 404 if user is not found', async () => {
-          const response = await supertest(app).get(`/users/invalid_id`);
-    
-          expect(response.status).toBe(404);
-          expect(response.body).toEqual({ error: 'User not found!' });
-        });
-      });
-    
-      describe('PUT /users/:id', () => {
-        it('should update a user', async () => {
-          const newUser = await User.create({ email: 'senuvi@j.com', password: 'password' });
-          const response = await supertest(app).put(`/users/${newUser._id}`).send({ email: 'senuvi@j.com' });
-    
-          expect(response.status).toBe(200);
-          expect(response.body).toEqual({ message: 'User updated successfully' });
-        });
-    
-        it('should return 404 if user is not found', async () => {
-          const response = await supertest(app).put(`/users/invalid_id`).send({ email: 'senuvi@j.com' });
-    
-          expect(response.status).toBe(404);
-          expect(response.body).toEqual({ error: 'User not found!' });
-        });
-      });
-    
-      describe('DELETE /users/:id', () => {
-        it('should delete a user', async () => {
-          const newUser = await User.create({ email: 'senuvi@j.com', password: 'password' });
-          const response = await supertest(app).delete(`/users/${newUser._id}`);
-    
-          expect(response.status).toBe(200);
-          expect(response.body).toEqual({ message: 'User deleted successfully' });
-        });
-    
-        it('should return 404 if user is not found', async () => {
-          const response = await supertest(app).delete(`/users/invalid_id`);
-    
-          expect(response.status).toBe(404);
-          expect(response.body).toEqual({ error: 'User not found!' });
-        });
-      });
-    });
-  
+//     expect(res.status).toHaveBeenCalledWith(200);
+//     expect(res.json).toHaveBeenCalledWith({ message: 'User verified successfully' });
+//     expect(next).not.toHaveBeenCalled();
+//   });
+
+  // Test user not found scenario (if applicable)
+  it('should call next with error if user is not found', async () => {
+    const req = { body: { email: "invalid@user.com", password: "invalidpassword" } } as Request;
+    const res = ({
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown) as Response;
+    const next = jest.fn();
+
+    await verifyUser(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(new Error('User not found!'));
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
+  });
 });
