@@ -34,7 +34,7 @@ export const setFusionToken = async (token: string | void) => {
 export const getFusionToken = async () => {
   try {
     const response = await axios.post(
-      `${process.env.FUSIONSOLAR_API_BASE_URL}/thirdData/login`,
+      `${process.env.FUSIONSOLAR_API_BASE_URL}/login`,
       {
         userName: process.env.FUSIONSOLAR_API_USERNAME,
         systemCode: process.env.FUSIONSOLAR_API_SYSTEMCODE,

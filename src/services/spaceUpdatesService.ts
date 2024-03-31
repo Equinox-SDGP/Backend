@@ -115,9 +115,9 @@ export const saveSpaceUpdates = async (
       startTime
     );
 
-    if (!shouldFetchFromFusion(lastUpdatedTime, collectTime, timeInterval)) {
-      return updatesFromDatabase;
-    }
+    // if (!shouldFetchFromFusion(lastUpdatedTime, collectTime, timeInterval)) {
+    //   return updatesFromDatabase;
+    // }
     const updatesFromFusion = await fetchUpdatesFromFusion(
       spaceId,
       lastUpdatedTime,
@@ -161,7 +161,6 @@ const fetchUpdatesFromFusion = async (
     case UPDATE_INTERVAL.MONTH:
       return await getDaySpaceUpdatesFromFusion(spaceId, lastUpdatedTime);
     case UPDATE_INTERVAL.YEAR:
-      console.log("Request travelled here");
       return await getMonthSpaceUpdatesFromFusion(spaceId, lastUpdatedTime);
     default:
       throw new Error("Invalid time interval");

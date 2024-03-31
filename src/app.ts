@@ -25,18 +25,13 @@ Logger.useDefaults();
 
 // Connecting to the database
 mongoose
-  .connect(
-    "mongodb+srv://nimesh20221000:zQiXKdX7MBtXJqSA@equinoxdb.ivinrwy.mongodb.net/?retryWrites=true&w=majority" ||
-      ""
-  )
+  .connect(process.env.MONGO_URI || "")
   .catch((err) => {
     console.log(err);
   })
   .then(() => {
     console.log("Connected to the database");
   });
-
-console.log(process.env.MONGO_URI);
 
 // Importing routes modules
 const userRouter = require("./routes/userRoutes");
@@ -54,7 +49,7 @@ app.use(bodyParser.json());
 // Setup the routes
 app.use("/user", userRouter);
 app.use("/space", spaceRouter);
-app.use("/spaceUpdates",spaceUpdatesRouter);
+app.use("/spaceUpdates", spaceUpdatesRouter);
 app.use("/chatbot", chatbotRouter);
 
 // Schedule the cron jobs
@@ -67,42 +62,25 @@ cron.schedule(
   }
 );
 
-cron.schedule(
-  "*/55 * * * *",
-  spaceDataController.updateSpaceDataListByTime,
-  {
-    scheduled: true,
-    timezone: "Asia/Colombo",
-  }
-);
+cron.schedule("*/55 * * * *", spaceDataController.updateSpaceDataListByTime, {
+  scheduled: true,
+  timezone: "Asia/Colombo",
+});
 
-cron.schedule(
-  "0 * * * *",
-  spaceUpdatesController.hourlySpaceUpdates,
-  {
-    scheduled: true,
-    timezone: "Asia/Colombo",
-  }
-)
+cron.schedule("0 * * * *", spaceUpdatesController.hourlySpaceUpdates, {
+  scheduled: true,
+  timezone: "Asia/Colombo",
+});
 
-cron.schedule(
-  "0 0 * * *",
-  spaceUpdatesController.dailySpaceUpdates,
-  {
-    scheduled: true,
-    timezone: "Asia/Colombo",
-  }
-)
+cron.schedule("0 0 * * *", spaceUpdatesController.dailySpaceUpdates, {
+  scheduled: true,
+  timezone: "Asia/Colombo",
+});
 
-cron.schedule(
-  "0 0 * * *",
-  spaceUpdatesController.monthlySpaceUpdates,
-  {
-    scheduled: true,
-    timezone: "Asia/Colombo",
-  }
-)
-
+cron.schedule("0 0 * * *", spaceUpdatesController.monthlySpaceUpdates, {
+  scheduled: true,
+  timezone: "Asia/Colombo",
+});
 
 // Route checking if the server is working
 app.get("/", (req, res) => {
