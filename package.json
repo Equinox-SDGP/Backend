@@ -12,7 +12,8 @@
   "scripts": {
     "build": "tsc",
     "test": "jest",
-    "start": "pm2 start dist/app.js",
+    "start": "pm2 start dist/app.js --no-daemon",
+    "prestart": "npm run build",
     "dev": "ts-node-dev src/app.ts"
   },
   "devDependencies": {

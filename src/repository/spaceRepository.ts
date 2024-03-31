@@ -18,11 +18,17 @@ export const getSpacesList = () => {
 };
 
 /** UPDATE Methods */
-export const updateSpace = (spaceId: string, spaceData: ISpace) => {
-  const updatedSpace = SpaceModel.findByIdAndUpdate(spaceId, spaceData, {
-    new: true,
-  }).exec();
-  return updatedSpace;
+export const updateSpace = async (spaceId: string, spaceData: ISpace) => {
+  try {
+      // Find the space by ID and update it with the provided fields
+      const updatedSpace = await SpaceModel.findByIdAndUpdate(spaceId, spaceData, {
+          new: true,
+      }).exec();
+      return updatedSpace;
+  } catch (error) {
+      console.error("Error updating space:", error);
+      throw error;
+  }
 };
 
 /** DELETE Methods */
