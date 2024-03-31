@@ -132,9 +132,9 @@ export const saveSpaceUpdates = async (
     await saveUpdatesToDatabase(updatesToSaveArray);
 
     return await getSpaceUpdates(spaceId, collectTime, timeInterval);
-  } catch (error) {
+  } catch (error:any) {
     console.error("Error fetching space updates from Fusion Solar API:", error);
-    throw new Error("Error fetching space updates from Fusion Solar API");
+    throw new Error("Error fetching space updates from Fusion Solar API" + error.message);
   }
 };
 

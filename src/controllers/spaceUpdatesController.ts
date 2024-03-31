@@ -60,8 +60,8 @@ export const saveSpaceUpdates = async (req: Request, res: Response) => {
       timeInterval
     );
     return res.status(201).json(spaceData);
-  } catch (error) {
-    console.error(error);
+  } catch (error:any) {
+    console.error("Error saving space data: ", error);
     return res.status(500).json({ message: "Error saving space data" });
   }
 };
@@ -122,3 +122,5 @@ export const hourlySpaceUpdates = async () => {
     console.log(error);
   }
 };
+
+
