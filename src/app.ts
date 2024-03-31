@@ -85,6 +85,23 @@ cron.schedule(
   }
 )
 
+cron.schedule(
+  "0 0 * * *",
+  spaceUpdatesController.dailySpaceUpdates,
+  {
+    scheduled: true,
+    timezone: "Asia/Colombo",
+  }
+)
+
+cron.schedule(
+  "0 0 * * *",
+  spaceUpdatesController.monthlySpaceUpdates,
+  {
+    scheduled: true,
+    timezone: "Asia/Colombo",
+  }
+)
 
 
 // Route checking if the server is working

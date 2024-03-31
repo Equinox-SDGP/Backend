@@ -122,5 +122,32 @@ export const hourlySpaceUpdates = async () => {
     console.log(error);
   }
 };
+// Daily space updates
+export const dailySpaceUpdates = async () => {
+  try {
+    const spaceList = await spaceService.getSpacesIdList();
 
+    spaceList.forEach(async (spaceId) => {
+      const currentTime = moment().valueOf();
+      await spaceUpdatesService.saveSpaceUpdates(spaceId, currentTime, "month");
+    });
+    console.log("Updated daily space data");
+  } catch (error) {
+    console.log(error);
+  }
+}
 
+// Monthly space updates
+export const monthlySpaceUpdates = async () => {
+  try {
+    const spaceList = await spaceService.getSpacesIdList();
+
+    spaceList.forEach(async (spaceId) => {
+      const currentTime = moment().valueOf();
+      await spaceUpdatesService.saveSpaceUpdates(spaceId, currentTime, "year");
+    });
+    console.log("Updated monthly space data");
+  } catch (error) {
+    console.log(error);
+  }
+}

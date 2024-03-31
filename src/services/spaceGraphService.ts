@@ -31,7 +31,7 @@ export const convertToGraphDataDay = (spaceUpdates: IUpdateSpace[]) => {
   // Construct the graph data object
   const graphData = {
     day: { data: hourData },
-    maxValue: maxValue,
+    maxValue: maxValue * 1.25,
   };
 
   return graphData;
@@ -53,7 +53,7 @@ export const convertToGraphDataWeek = (spaceUpdates: IUpdateSpace[]) => {
 
   const graphData = {
     week: { data: weekData },
-    maxValue: maxValue,
+    maxValue: maxValue * 1.25,
   };
 
   return graphData;
@@ -78,7 +78,7 @@ export const convertToGraphDataMonth = (spaceUpdates: IUpdateSpace[]) => {
 
   const graphData = {
     month: { data: monthData },
-    maxValue: maxValue,
+    maxValue: maxValue * 1.25,
   };
 
   return graphData;
@@ -99,7 +99,7 @@ export const convertToGraphDataYear = (spaceUpdates: IUpdateSpace[]) => {
 
   const graphData = {
     year: { data: yearData },
-    maxValue: maxValue,
+    maxValue: maxValue * 1.25,
   };
 
   return graphData;

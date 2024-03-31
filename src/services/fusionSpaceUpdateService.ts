@@ -64,6 +64,7 @@ export const getDaySpaceUpdatesFromFusion = async (
         },
       }
     );
+    console.log(response)
 
     if (response.data.failCode === 407) {
       throw new Error(
