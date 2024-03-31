@@ -2,14 +2,13 @@
 const projectId = "equinox-chatbot";
 const location = "global";
 const agentId = "bd193570-0d96-4d6f-aeca-3a554a7471ad";
-const query = "Hello!";
 const languageCode = "en";
+const sessionId = "123456";
 
 // Imports the Google Cloud Some API library
 const { SessionsClient } = require("@google-cloud/dialogflow-cx");
 
 const client = new SessionsClient();
-const sessionId = Math.random().toString(36).substring(7);
 
 export const getBotResponse = async (userMessage: string) => {
   const sessionPath = client.projectLocationAgentSessionPath(
@@ -23,7 +22,7 @@ export const getBotResponse = async (userMessage: string) => {
     session: sessionPath,
     queryInput: {
       text: {
-        text: query,
+        text: userMessage,
       },
       languageCode,
     },
