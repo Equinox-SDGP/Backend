@@ -19,7 +19,7 @@ describe("POST /spaceUpdates/refresh", () => {
         collectTime: 1711019706612,
         timeInterval: "Invalid time interval",
       });
-      expect(response.body).toEqual({ message: "Error saving space data" });
+      expect(response.body).toEqual({ message: "Error updating space data" });
     });
 
     test("should save the space updates", async () => {
