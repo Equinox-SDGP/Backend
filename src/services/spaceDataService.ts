@@ -58,7 +58,7 @@ export const fetchSpaceData = async () => {
   const stationCodes = await spaceService.getSpacesIdListString();
   try {
     const response = await axios.post(
-      `${process.env.FUSIONSOLAR_API_BASE_URL}/thirdData/getStationRealKpi`,
+      `${process.env.FUSIONSOLAR_API_BASE_URL}/getStationRealKpi`,
       {
         stationCodes: stationCodes,
       },
@@ -76,11 +76,12 @@ export const fetchSpaceData = async () => {
     }
     return response.data;
   } catch (error: any) {
-    return error.message;
+    throw new Error("Error fetching space data from Fusion Solar API: " + error.message);
   }
 };
 
 export const setSpaceData = async (spaceData: any) => {
+
   if (
     spaceData !== undefined &&
     Array.isArray(spaceData.data) &&

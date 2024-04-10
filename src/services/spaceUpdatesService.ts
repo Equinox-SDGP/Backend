@@ -189,7 +189,7 @@ const prepareUpdatesToSave = async (
 
   const updateInterval = await timeIntervalMapper(timeInterval);
 
-  return updatesFromFusion.data
+  const filteredUpdates = updatesFromFusion.data
     .filter((element) => element.collectTime > lastUpdatedTime)
     .map((element) => ({
       dataItemMap: {
@@ -203,12 +203,15 @@ const prepareUpdatesToSave = async (
       collectTime: element.collectTime,
       updateInterval: updateInterval,
     }));
+    console.log(filteredUpdates);
+    return filteredUpdates;
 };
 
 /** This function saves updates to the database
  *  - It saves the updates to the database
  * @param updatesToSaveArray
  */
+
 const saveUpdatesToDatabase = async (updatesToSaveArray: any[]) => {
   await spaceUpdatesRepository.addSpaceUpdates(updatesToSaveArray);
 };

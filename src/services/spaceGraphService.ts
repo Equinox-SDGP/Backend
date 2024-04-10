@@ -19,6 +19,7 @@ export const convertToGraphDataDay = (spaceUpdates: IUpdateSpace[]) => {
 
   // Initialize max value to zero
   let maxValue = 0;
+  console.log(spaceUpdates)
 
   // Update hourData and calculate maxValue using spaceUpdates
   spaceUpdates.forEach((element: IUpdateSpace) => {
@@ -29,6 +30,8 @@ export const convertToGraphDataDay = (spaceUpdates: IUpdateSpace[]) => {
     // Update maxValue if needed
     maxValue = Math.max(maxValue, hourData[hourOfDay].value);
   });
+  console.log(hourData);
+  console.log(maxValue);
 
   // Construct the graph data object
   const graphData = {

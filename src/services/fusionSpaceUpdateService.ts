@@ -13,7 +13,7 @@ export const getHourSpaceUpdatesFromFusion = async (
   try {
     const xsrfToken = await fusionSessionService.getRecentFusionSession();
     const response = await axios.post(
-      `${process.env.FUSIONSOLAR_API_BASE_URL}/getKpiStationDay`,
+      `${process.env.FUSIONSOLAR_API_BASE_URL}/getKpiStationHour`,
       {
         stationCodes: spaceId,
         collectTime: collectTime,
@@ -31,6 +31,7 @@ export const getHourSpaceUpdatesFromFusion = async (
         "Too many requests to Fusion Solar API. Please try again later."
       );
     }
+    console.log("Hourly updates from Fusion: ", response.data)
 
     return response.data;
   } catch (error: any) {
@@ -64,7 +65,6 @@ export const getDaySpaceUpdatesFromFusion = async (
         },
       }
     );
-    console.log(response)
 
     if (response.data.failCode === 407) {
       throw new Error(
